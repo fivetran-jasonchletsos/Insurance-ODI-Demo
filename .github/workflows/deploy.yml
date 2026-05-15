@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'meridian-app/**'
+      - 'atlas-app/**'
       - '.github/workflows/deploy.yml'
   workflow_dispatch:
 
@@ -22,19 +22,19 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: meridian-app/frontend
+        working-directory: atlas-app/frontend
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: meridian-app/frontend/package-lock.json
+          cache-dependency-path: atlas-app/frontend/package-lock.json
       - run: npm ci
       - run: npm run build
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: meridian-app/frontend/dist
+          path: atlas-app/frontend/dist
 
   deploy:
     needs: build

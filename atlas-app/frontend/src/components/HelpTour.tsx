@@ -62,7 +62,7 @@ const STEPS: Step[] = [
   {
     title: 'Spot adverse claim development before reserves move',
     pitch:
-      'OpenFEMA NFIP and synthetic claim flow by peril, cause, and carrier — joined to your covered names. An early-warning radar for reserve strengthening, loss-ratio drift, and cat-event proximity.',
+      'Claims streaming live from SQL Server — by peril, cause, and carrier — joined to your covered names and to the NOAA cat-event feed. An early-warning radar for reserve strengthening, loss-ratio drift, and cat-event proximity.',
     cta: { label: 'Open Claims Radar', to: '/complaints' },
     preview: () => (
       <div className="rounded-lg border border-slate-200 bg-white p-3 grid grid-cols-6 gap-1">
@@ -80,7 +80,7 @@ const STEPS: Step[] = [
   {
     title: 'Drill into any single carrier',
     pitch:
-      'Click a carrier to see NAIC statutory filings, 6-year premium and loss-ratio trend, line-of-business percentile, peer comparables, and claim exposure — joined from NAIC, NOAA, and OpenFEMA into one underwriter-ready page.',
+      'Click a carrier to see NAIC statutory filings, 6-year premium and loss-ratio trend, line-of-business percentile, peer comparables, and claim exposure — joined from your Oracle policy book, SQL Server claims, NAIC, and NOAA into one underwriter-ready page.',
     cta: { label: 'Browse Policies', to: '/holdings' },
     preview: () => (
       <div className="rounded-lg border border-slate-200 bg-white p-3 space-y-2">
@@ -97,9 +97,9 @@ const STEPS: Step[] = [
     ),
   },
   {
-    title: 'See reinsurance treaties as they sync in',
+    title: 'Modernize your legacy core, no consultants',
     pitch:
-      'Pipeline view shows every Fivetran connector — NAIC filings, NOAA storm events, OpenFEMA claims, and treaty-level reinsurance feeds — with throughput, lag, and incident replay. Simulate a failure to walk the room through observability.',
+      'Pipeline view shows every Fivetran connector — Oracle Policy Admin (LogMiner CDC), SQL Server Claims (Change Tracking), plus NAIC + NOAA enrichment — with throughput, lag, and incident replay. Simulate a failure to walk the room through observability.',
     cta: { label: 'Inspect Pipeline', to: '/pipeline' },
     preview: () => (
       <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 grid grid-cols-4 gap-1">

@@ -319,9 +319,10 @@ function ArchitectureDiagram({
 
         {/* Sources */}
         {[
-          { y: 30,  label: 'NAIC',       sub: 'Carrier filings · statutory data' },
-          { y: 120, label: 'NOAA',       sub: 'Storm Events · catastrophe data' },
-          { y: 210, label: 'OpenFEMA',   sub: 'NFIP flood-insurance claims' },
+          { y: 20,  label: 'Oracle 19c',  sub: 'Policy Admin · LogMiner CDC' },
+          { y: 100, label: 'SQL Server',  sub: 'Claims · Change Tracking' },
+          { y: 180, label: 'NAIC',        sub: 'Carrier filings · enrichment' },
+          { y: 260, label: 'NOAA',        sub: 'Storm events · cat data' },
         ].map((s, i) => (
           <g key={i} transform={`translate(20, ${s.y})`}>
             <rect width="160" height="68" rx="4" fill="#ffffff" stroke="#d9d3c4" strokeWidth="1" />

@@ -276,7 +276,7 @@ export default function HomePage() {
           </div>
           <ol className="grid grid-cols-1 md:grid-cols-5 gap-3 sm:gap-4">
             {[
-              { tag: '01', label: 'Sources', desc: 'NAIC · NOAA Storm Events · OpenFEMA NFIP. Three public APIs, three Fivetran custom connectors.', accent: 'bronze' as const },
+              { tag: '01', label: 'Sources', desc: 'Oracle PAS · SQL Server Claims · NAIC · NOAA. Two legacy core DBs + two public enrichment sources, four Fivetran connectors.', accent: 'bronze' as const },
               { tag: '02', label: 'Ingest', desc: 'Fivetran writes raw bronze tables to S3 as Apache Iceberg via the AWS Glue Catalog.', accent: 'bronze' as const },
               { tag: '03', label: 'Transform', desc: 'dbt builds silver (conformed) → gold (business-ready) marts on Athena.', accent: 'silver' as const },
               { tag: '04', label: 'Serve', desc: 'Athena queries gold-layer Iceberg tables. Same SQL would run on Trino or DuckDB.', accent: 'gold' as const },

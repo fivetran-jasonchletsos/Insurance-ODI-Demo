@@ -7,7 +7,7 @@ export default function AboutPage() {
         <p className="mt-3 text-[var(--ink-muted)] leading-relaxed">
           Atlas Risk is a reference build that demonstrates how a commercial-insurance and reinsurance
           desk can be powered entirely by Fivetran's Open Data Infrastructure — Fivetran custom connectors
-          landing public-domain insurance data (NAIC carrier filings, NOAA Storm Events, OpenFEMA NFIP claims)
+          landing legacy core-system data (Oracle Policy Admin + SQL Server Claims) and public enrichment (NAIC carrier filings, NOAA Storm Events)
           directly into a customer-owned Apache Iceberg lake on S3, with dbt building the analytics layer
           and AWS Athena serving the query workload.
         </p>
@@ -95,7 +95,7 @@ export default function AboutPage() {
         <div className="eyebrow mb-2" style={{ color: 'var(--caution)' }}>Disclaimer</div>
         <p className="text-[var(--ink-muted)] leading-relaxed">
           <strong className="text-[var(--ink-strong)]">All data shown is synthetic or sampled from public sources</strong>{' '}
-          (NAIC, NOAA Storm Events, OpenFEMA NFIP) and aggregated for demonstration purposes. Atlas Risk
+          (Oracle PAS + SQL Server Claims as the legacy core; NAIC and NOAA as public enrichment) and aggregated for demonstration purposes. Atlas Risk
           is a fictional insurance advisory. No portion of this site constitutes underwriting advice or a binding quote.
         </p>
       </section>
@@ -122,7 +122,7 @@ const PILLARS = [
 ];
 
 const STACK = [
-  { layer: 'Ingest',     name: 'Fivetran custom connectors', note: 'NAIC · NOAA Storm Events · OpenFEMA NFIP · built with the Connector SDK.' },
+  { layer: 'Ingest',     name: 'Fivetran connectors',        note: 'Oracle 19c (LogMiner CDC) · SQL Server 2019 (Change Tracking) · NAIC · NOAA Storm Events. Four sources, zero ETL code.' },
   { layer: 'Storage',    name: 'Amazon S3',                  note: 'atlas-odi-lake bucket holds bronze · silver · gold prefixes.' },
   { layer: 'Format',     name: 'Apache Iceberg v2',          note: 'Parquet files, ZSTD-compressed, Glue catalog.' },
   { layer: 'Catalog',    name: 'AWS Glue Data Catalog',      note: 'Iceberg REST + table-level access control.' },
@@ -134,18 +134,23 @@ const STACK = [
 
 const DATA_SOURCES = [
   {
-    title: 'NAIC — National Association of Insurance Commissioners',
-    description: 'Public statutory filings for every state-regulated U.S. insurance carrier. We pull carrier master records, financial annual statements, and line-of-business detail for the in-scope universe.',
-    provides: 'Carrier master · NAIC code · premium / loss / surplus / RBC',
+    title: 'Oracle 19c — Policy Administration System',
+    description: 'The carrier\'s primary Guidewire-style PAS, replicated continuously via Oracle LogMiner CDC. Schema follows the operational system; line-of-business, premium, retention, and effective dates flow through unchanged. The headline "legacy core → open lake" story Fivetran was built for — no consultants, no custom code, no off-hours batches.',
+    provides: 'Policies · endorsements · LoB · premium · retention · effective dates',
   },
   {
-    title: 'NOAA Storm Events Database',
-    description: 'The National Centers for Environmental Information\'s storm-event archive: hurricanes, hail, tornadoes, wildfire, flood. Catastrophe modeling input data for property and reinsurance lines.',
+    title: 'SQL Server 2019 — Claims Management System',
+    description: 'The carrier\'s claims core, replicated via SQL Server Change Tracking. PHI is masked at the Iceberg boundary; claim ID, peril, paid loss, reserves, and adjuster notes all flow to the lake in near-real-time.',
+    provides: 'Claims · perils · paid loss · reserves · status · adjuster activity',
+  },
+  {
+    title: 'NAIC — Carrier filings (enrichment)',
+    description: 'Public statutory filings for every state-regulated U.S. insurance carrier. We pull carrier master records, financial annual statements, and line-of-business detail to benchmark the in-force book against industry peers.',
+    provides: 'Carrier master · NAIC code · industry premium / loss / surplus / RBC',
+  },
+  {
+    title: 'NOAA Storm Events (enrichment)',
+    description: 'The National Centers for Environmental Information\'s storm-event archive: hurricanes, hail, tornadoes, wildfire, flood. Catastrophe modeling input data joined to the policy book for exposure analysis.',
     provides: 'Event-level catastrophe data · peril class · property + crop damage estimates',
-  },
-  {
-    title: 'OpenFEMA — NFIP Redacted Claims',
-    description: 'The National Flood Insurance Program\'s redacted claims dataset (OpenFEMA). We normalize state, peril, and loss-amount fields to attribute claims to perils and carriers.',
-    provides: 'Claims stream · peril cluster · paid loss / reserve / status',
   },
 ];

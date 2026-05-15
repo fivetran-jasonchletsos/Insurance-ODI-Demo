@@ -65,8 +65,38 @@ export default function PipelinePage() {
     };
     return [
       {
+        id: 'oracle_pas',
+        name: 'Oracle · Policy Admin (Guidewire-style)',
+        schema: 'oracle_pas',
+        service: 'oracle',
+        sync_state: connectorsDown ? 'failed' : 'scheduled',
+        failed_at: connectorsDown ? new Date().toISOString() : null,
+        paused: false,
+        dashboard_url: 'https://fivetran.com/dashboard',
+        destination: 'S3 Iceberg',
+        source_db: 'Oracle 19c · LogMiner CDC',
+        rows_synced_total: 14_820_000,
+        throughput_24h: mkSeries(4200, 950, connectorsDown ? -2800 : 80),
+        lag_24h: mkSeries(connectorsDown ? 240 : 12, 8, connectorsDown ? 480 : 0),
+      },
+      {
+        id: 'sqlserver_claims',
+        name: 'SQL Server · Claims Management',
+        schema: 'sqlserver_claims',
+        service: 'sql_server',
+        sync_state: 'scheduled',
+        failed_at: null,
+        paused: false,
+        dashboard_url: 'https://fivetran.com/dashboard',
+        destination: 'S3 Iceberg',
+        source_db: 'SQL Server 2019 · Change Tracking',
+        rows_synced_total: 8_640_000,
+        throughput_24h: mkSeries(2800, 620, 40),
+        lag_24h: mkSeries(18, 10, -2),
+      },
+      {
         id: 'naic_filings',
-        name: 'NAIC carrier filings',
+        name: 'NAIC · Carrier filings (enrichment)',
         schema: 'naic_filings',
         service: 'connector_sdk',
         sync_state: 'scheduled',
@@ -75,39 +105,24 @@ export default function PipelinePage() {
         dashboard_url: 'https://fivetran.com/dashboard',
         destination: 'S3 Iceberg',
         source_db: 'NAIC public filings',
-        rows_synced_total: 84210,
+        rows_synced_total: 84_210,
         throughput_24h: mkSeries(420, 180, 60),
         lag_24h: mkSeries(45, 25, -5),
       },
       {
         id: 'noaa_storm_events',
-        name: 'NOAA Storm Events',
+        name: 'NOAA · Storm events (cat data)',
         schema: 'noaa_storm_events',
-        service: 'connector_sdk',
-        sync_state: connectorsDown ? 'failed' : 'scheduled',
-        failed_at: connectorsDown ? new Date().toISOString() : null,
-        paused: false,
-        dashboard_url: 'https://fivetran.com/dashboard',
-        destination: 'S3 Iceberg',
-        source_db: 'NOAA NCEI API',
-        rows_synced_total: 13455,
-        throughput_24h: mkSeries(95, 40, connectorsDown ? -70 : 10),
-        lag_24h: mkSeries(connectorsDown ? 320 : 30, 20, connectorsDown ? 600 : 0),
-      },
-      {
-        id: 'openfema_nfip_claims',
-        name: 'OpenFEMA NFIP claims',
-        schema: 'openfema_nfip_claims',
         service: 'connector_sdk',
         sync_state: 'scheduled',
         failed_at: null,
         paused: false,
         dashboard_url: 'https://fivetran.com/dashboard',
         destination: 'S3 Iceberg',
-        source_db: 'OpenFEMA API',
-        rows_synced_total: 9770,
-        throughput_24h: mkSeries(140, 50, 20),
-        lag_24h: mkSeries(60, 30, 5),
+        source_db: 'NOAA NCEI API',
+        rows_synced_total: 13_455,
+        throughput_24h: mkSeries(95, 40, 10),
+        lag_24h: mkSeries(30, 20, 0),
       },
     ];
   }, [connectorsDown]);
@@ -166,7 +181,7 @@ export default function PipelinePage() {
       </div>
 
       <Section n={1} title="Fivetran custom connectors" layer={layers.connectors} sim={failures.has('connectors')} onSim={() => toggle('connectors')}>
-        <KV k="Connectors" v="naic_filings · noaa_storm_events · openfema_nfip_claims" mono />
+        <KV k="Connectors" v="oracle_pas · sqlserver_claims · naic_filings · noaa_storm_events" mono />
         <KV k="Runtime" v="Fivetran Connector SDK (Python)" />
         <KV k="Frequency" v="Every 6 hours" />
         <KV k="Destination" v="S3 bucket (Iceberg-managed)" />
