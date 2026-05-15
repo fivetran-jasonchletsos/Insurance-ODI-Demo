@@ -1,0 +1,124 @@
+{
+  "series": [
+    {
+      "series_id": "PROP_LR",
+      "title": "Industry Property Loss Ratio",
+      "units": "Ratio",
+      "frequency": "Daily",
+      "category": "sector",
+      "latest_value": 1.1758,
+      "latest_date": "2026-05-14",
+      "prior_value": 1.0521,
+      "yoy_change": -0.157,
+      "observations_count": 1260
+    },
+    {
+      "series_id": "AUTO_LR",
+      "title": "Industry Personal Auto Loss Ratio",
+      "units": "Ratio",
+      "frequency": "Daily",
+      "category": "sector",
+      "latest_value": 4.1377,
+      "latest_date": "2026-05-14",
+      "prior_value": 4.3781,
+      "yoy_change": -0.1696,
+      "observations_count": 1260
+    },
+    {
+      "series_id": "WC_LR",
+      "title": "Industry Workers Comp Loss Ratio",
+      "units": "Ratio",
+      "frequency": "Daily",
+      "category": "sector",
+      "latest_value": 1.5858,
+      "latest_date": "2026-05-14",
+      "prior_value": 1.5446,
+      "yoy_change": -0.5713,
+      "observations_count": 1260
+    },
+    {
+      "series_id": "COMB_RATIO",
+      "title": "Industry Combined Ratio Spread",
+      "units": "Ratio",
+      "frequency": "Daily",
+      "category": "sector",
+      "latest_value": -0.4308,
+      "latest_date": "2026-05-14",
+      "prior_value": -0.3201,
+      "yoy_change": -1.3894,
+      "observations_count": 1260
+    },
+    {
+      "series_id": "CAT_PML",
+      "title": "Industry 1-in-100 PML (modeled)",
+      "units": "Billions USD",
+      "frequency": "Monthly",
+      "category": "growth",
+      "latest_value": 1.1938,
+      "latest_date": "2026-05-01",
+      "prior_value": 1.1581,
+      "yoy_change": 0.0841,
+      "observations_count": 60
+    },
+    {
+      "series_id": "SEV_CPI",
+      "title": "Severity CPI (claims)",
+      "units": "Index 2010=100",
+      "frequency": "Monthly",
+      "category": "inflation",
+      "latest_value": 272.85,
+      "latest_date": "2026-05-01",
+      "prior_value": 273.02,
+      "yoy_change": 0.0045,
+      "observations_count": 60
+    },
+    {
+      "series_id": "CYCLONE_CT",
+      "title": "Tropical Cyclone Count (TTM)",
+      "units": "Count",
+      "frequency": "Monthly",
+      "category": "other",
+      "latest_value": 4.4842,
+      "latest_date": "2026-05-01",
+      "prior_value": 4.4868,
+      "yoy_change": 0.0268,
+      "observations_count": 60
+    },
+    {
+      "series_id": "DWP_TOTAL",
+      "title": "Industry Direct Written Premium",
+      "units": "Billions USD",
+      "frequency": "Quarterly",
+      "category": "growth",
+      "latest_value": 26229.35,
+      "latest_date": "2026-04-01",
+      "prior_value": 26080.24,
+      "yoy_change": 0.0186,
+      "observations_count": 20
+    },
+    {
+      "series_id": "STRUCT_STR",
+      "title": "Property Starts (exposure proxy)",
+      "units": "Thousands",
+      "frequency": "Monthly",
+      "category": "growth",
+      "latest_value": 1750.16,
+      "latest_date": "2026-05-01",
+      "prior_value": 1770.05,
+      "yoy_change": 0.0172,
+      "observations_count": 60
+    },
+    {
+      "series_id": "REINS_RATE",
+      "title": "Reinsurance Rate-on-Line Index",
+      "units": "Index 2015=100",
+      "frequency": "Monthly",
+      "category": "other",
+      "latest_value": 60.9634,
+      "latest_date": "2026-05-01",
+      "prior_value": 56.3594,
+      "yoy_change": 0.0078,
+      "observations_count": 60
+    }
+  ]
+}
