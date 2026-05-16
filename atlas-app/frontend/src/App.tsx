@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage';
 import HoldingsPage from './pages/HoldingsPage';
 import CompanyDetailPage from './pages/CompanyDetailPage';
 import MacroPage from './pages/MacroPage';
+import CatastropheExposurePage from './pages/CatastropheExposurePage';
 import ComplaintsPage from './pages/ComplaintsPage';
 import AgentPage from './pages/AgentPage';
 import AboutAgentPage from './pages/AboutAgentPage';
@@ -31,6 +32,7 @@ export default function App() {
             <Route path="/companies/:cik" element={<CompanyDetailPage />} />
             <Route path="/macro" element={<MacroPage />} />
             <Route path="/macro/:seriesId" element={<MacroPage />} />
+            <Route path="/exposure" element={<CatastropheExposurePage />} />
             <Route path="/complaints" element={<ComplaintsPage />} />
             <Route path="/agent" element={<AgentPage />} />
             <Route path="/about-agent" element={<AboutAgentPage />} />
