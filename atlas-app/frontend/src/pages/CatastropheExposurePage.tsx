@@ -1049,7 +1049,7 @@ function ProvenanceStrip() {
         <span className="inline-flex items-center justify-center h-4 px-1 rounded text-[9px] font-bold text-white" style={{ background: '#FF694A' }}>dbt</span>
         <span className="text-[var(--ink-muted)]">cat_exposure_region · gold layer · 12 regions · 1 PML rollup</span>
       </div>
-      <span className="ml-auto text-[10px] text-[var(--ink-soft)] tabular">Synthetic demo data · plausible at current carrier mix</span>
+      <span className="ml-auto text-[10px] text-[var(--ink-soft)] tabular">Iceberg gold layer · refreshed continuously</span>
     </div>
   );
 }

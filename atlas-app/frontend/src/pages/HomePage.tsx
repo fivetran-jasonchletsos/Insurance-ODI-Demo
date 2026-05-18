@@ -69,22 +69,22 @@ export default function HomePage() {
 
   return (
     <>
-      {/* Institutional hero — navy with gold accent rule */}
-      <section className="bg-[var(--navy-deep)] text-white relative overflow-hidden">
+      {/* Institutional hero — paper with gold accent rule */}
+      <section className="bg-[var(--paper)] text-[var(--ink-strong)] relative overflow-hidden border-b border-[var(--hairline)]">
         {/* Subtle diagonal pattern overlay */}
-        <div className="absolute inset-0 opacity-[0.06] pointer-events-none" aria-hidden style={{
-          backgroundImage: 'repeating-linear-gradient(135deg, transparent 0 28px, rgba(212,175,117,0.5) 28px 29px)',
+        <div className="absolute inset-0 opacity-[0.05] pointer-events-none" aria-hidden style={{
+          backgroundImage: 'repeating-linear-gradient(135deg, transparent 0 28px, rgba(184,151,92,0.45) 28px 29px)',
         }} />
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-24 relative">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-end">
             <div className="lg:col-span-7">
-              <div className="eyebrow-light mb-4">Atlas Risk · Open Data Infrastructure</div>
-              <h1 className="font-serif text-4xl sm:text-6xl font-semibold text-white leading-[0.98] tracking-tight">
+              <div className="eyebrow mb-4">Atlas Risk · Open Data Infrastructure</div>
+              <h1 className="font-serif text-4xl sm:text-6xl font-semibold text-[var(--ink-strong)] leading-[0.98] tracking-tight">
                 One lake.<br />
-                <span className="text-[var(--gold-bright)]">Every engine.</span><br />
+                <span className="text-[var(--gold-dim)]">Every engine.</span><br />
                 Full control.
               </h1>
-              <p className="mt-6 text-base sm:text-lg text-white/75 max-w-2xl leading-relaxed">
+              <p className="mt-6 text-base sm:text-lg text-[var(--ink-muted)] max-w-2xl leading-relaxed">
                 Underwriting intelligence backed by an open data lake. Carrier filings, catastrophe data,
                 and claims signals — landed once in open Iceberg tables on S3, queried by Athena,
                 governed in Glue, ready for AI agents the moment they arrive.
@@ -99,7 +99,7 @@ export default function HomePage() {
                 </button>
                 <button
                   onClick={() => navigate('/architecture')}
-                  className="inline-flex items-center gap-2 rounded-sm font-semibold text-sm text-white bg-white/5 border border-white/20 px-5 py-3 hover:bg-white/10 transition-colors"
+                  className="inline-flex items-center gap-2 rounded-sm font-semibold text-sm text-[var(--ink-strong)] bg-white border border-[var(--hairline)] px-5 py-3 hover:border-[var(--gold)] transition-colors"
                 >
                   See the ODI architecture <span aria-hidden>→</span>
                 </button>
@@ -294,14 +294,14 @@ export default function HomePage() {
       </section>
 
       {/* Closing principle */}
-      <section className="bg-[var(--navy-deep)] text-white border-t border-[var(--hairline)]">
+      <section className="bg-[var(--paper-deep)] text-[var(--ink-strong)] border-t border-[var(--hairline)]">
         <div className="mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:px-8 text-center">
-          <div className="eyebrow-light mb-3">Design Principles</div>
-          <p className="font-serif text-2xl sm:text-3xl text-white leading-snug">
+          <div className="eyebrow mb-3">Design Principles</div>
+          <p className="font-serif text-2xl sm:text-3xl text-[var(--ink-strong)] leading-snug">
             "Lock-in is an architectural choice.<br />
-            <span className="text-[var(--gold-bright)]">So is openness.</span>"
+            <span className="text-[var(--gold-dim)]">So is openness.</span>"
           </p>
-          <p className="mt-4 text-sm text-white/70 max-w-2xl mx-auto">
+          <p className="mt-4 text-sm text-[var(--ink-muted)] max-w-2xl mx-auto">
             Atlas Risk chose ODI because it gives the underwriting desk control over storage, compute,
             cost, and shared context — and because the AI agents that come next will demand
             governed access to the lake, not a serial-port pipe through the warehouse.
