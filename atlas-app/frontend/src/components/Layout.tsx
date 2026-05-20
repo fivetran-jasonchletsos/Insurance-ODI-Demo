@@ -15,6 +15,7 @@ const NAV_ITEMS: [string, string][] = [
   ['/macro', 'Cat & Loss Ratios'],
   ['/complaints', 'Claims Radar'],
   ['/agent', 'Underwriting Copilot'],
+  ['/ask', 'Ask (Cortex)'],
   ['/architecture', 'ODI Architecture'],
   ['/pipeline', 'Pipeline'],
   ['/about', 'About'],
