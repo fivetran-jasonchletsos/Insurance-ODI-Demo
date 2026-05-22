@@ -6,16 +6,23 @@ import {
 import { api, formatNumber } from '../api/queries';
 import type { Complaint } from '../types';
 import Sparkline from '../components/Sparkline';
+import { primeCache, relatedFor, type ClaimNeighbor } from '../lib/related';
 
 export default function ComplaintsPage() {
   const [complaints, setComplaints] = useState<Complaint[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [product, setProduct] = useState<string | null>(null);
-  const [state, setState] = useState<string | null>(null);
-  const [topic, setTopic] = useState<string | null>(null);
+  const [loading, setLoading]     = useState(true);
+  const [product, setProduct]     = useState<string | null>(null);
+  const [state, setState]         = useState<string | null>(null);
+  const [topic, setTopic]         = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [relatedReady, setRelatedReady] = useState(false);
 
   useEffect(() => {
-    api.getComplaints().then((r) => setComplaints(r.complaints)).finally(() => setLoading(false));
+    api.getComplaints().then((r) => {
+      setComplaints(r.complaints);
+      primeCache(r.complaints);
+      setRelatedReady(true);
+    }).finally(() => setLoading(false));
   }, []);
 
   const filtered = useMemo(() => {
@@ -239,27 +246,80 @@ export default function ComplaintsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--hairline-soft)]">
-              {recent.map((c) => (
-                <tr key={c.complaint_id} className="hover:bg-[var(--paper-deep)]">
-                  <td className="px-4 py-2 text-[var(--ink)] font-medium">{c.date_received}</td>
-                  <td className="px-4 py-2">
-                    {c.cik ? (
-                      <Link to={`/companies/${encodeURIComponent(c.cik)}`} className="text-[var(--gold-dim)] hover:text-[var(--ink-strong)] font-medium">
-                        {c.company_normalized ?? c.company}
-                      </Link>
-                    ) : (
-                      <span className="text-[var(--ink-muted)]">{c.company}</span>
+              {recent.map((c) => {
+                const isExpanded = expandedId === c.complaint_id;
+                const neighbors: ClaimNeighbor[] = relatedReady ? relatedFor(c.complaint_id) : [];
+                return (
+                  <>
+                    <tr
+                      key={c.complaint_id}
+                      className={`hover:bg-[var(--paper-deep)] cursor-pointer select-none ${isExpanded ? 'bg-[var(--paper-deep)]' : ''}`}
+                      onClick={() => setExpandedId(isExpanded ? null : c.complaint_id)}
+                    >
+                      <td className="px-4 py-2 text-[var(--ink)] font-medium">{c.date_received}</td>
+                      <td className="px-4 py-2">
+                        {c.cik ? (
+                          <Link
+                            to={`/companies/${encodeURIComponent(c.cik)}`}
+                            className="text-[var(--gold-dim)] hover:text-[var(--ink-strong)] font-medium"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            {c.company_normalized ?? c.company}
+                          </Link>
+                        ) : (
+                          <span className="text-[var(--ink-muted)]">{c.company}</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-2 text-[var(--ink-muted)] text-xs">{c.product}</td>
+                      <td className="px-4 py-2 text-[var(--ink-muted)] text-xs">{c.issue}</td>
+                      <td className="px-4 py-2 text-[var(--ink-soft)] text-xs">{c.sub_issue ?? '—'}</td>
+                      <td className="px-4 py-2 ticker text-[11px] text-[var(--ink-muted)]">{c.state ?? '—'}</td>
+                      <td className="px-4 py-2 text-right">
+                        {c.has_narrative ? <span className="status-pill gold">Yes</span> : <span className="text-xs text-[var(--ink-soft)]">—</span>}
+                      </td>
+                    </tr>
+                    {isExpanded && (
+                      <tr key={`${c.complaint_id}-related`}>
+                        <td colSpan={7} className="px-4 py-3 bg-[var(--gold-bg)] border-t border-[var(--hairline)]">
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[var(--gold-dim)]">
+                              Related claims — {c.complaint_id}
+                            </p>
+                            <Link
+                              to="/related-claims"
+                              className="text-[9px] font-mono uppercase tracking-[0.2em] text-[var(--gold-dim)] hover:text-[var(--ink-strong)] border border-[var(--gold-dim)]/40 px-2 py-0.5"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              Full network
+                            </Link>
+                          </div>
+                          {neighbors.length === 0 ? (
+                            <p className="text-xs text-[var(--ink-soft)]">No neighbors computed yet.</p>
+                          ) : (
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                              {neighbors.slice(0, 8).map((nb) => (
+                                <div
+                                  key={nb.id}
+                                  className="border border-[var(--hairline)] bg-white px-2.5 py-2 cursor-pointer hover:border-[var(--gold)] transition"
+                                  onClick={(e) => { e.stopPropagation(); setExpandedId(nb.id); }}
+                                >
+                                  <div className="flex items-baseline justify-between gap-1 mb-0.5">
+                                    <span className="font-mono text-[10px] font-semibold text-[var(--ink-strong)] truncate">{nb.id}</span>
+                                    <span className="font-mono text-[9px] text-[var(--gold-dim)] flex-none">{Math.round(nb.score * 100)}%</span>
+                                  </div>
+                                  <p className="text-[10px] text-[var(--ink-muted)] truncate">{nb.claim.product}</p>
+                                  <p className="text-[10px] text-[var(--ink-soft)] truncate">{nb.claim.state ?? '—'} · {nb.claim.issue}</p>
+                                  <p className="text-[9px] text-[var(--ink-soft)] truncate mt-0.5 italic">{nb.why}</p>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </td>
+                      </tr>
                     )}
-                  </td>
-                  <td className="px-4 py-2 text-[var(--ink-muted)] text-xs">{c.product}</td>
-                  <td className="px-4 py-2 text-[var(--ink-muted)] text-xs">{c.issue}</td>
-                  <td className="px-4 py-2 text-[var(--ink-soft)] text-xs">{c.sub_issue ?? '—'}</td>
-                  <td className="px-4 py-2 ticker text-[11px] text-[var(--ink-muted)]">{c.state ?? '—'}</td>
-                  <td className="px-4 py-2 text-right">
-                    {c.has_narrative ? <span className="status-pill gold">Yes</span> : <span className="text-xs text-[var(--ink-soft)]">—</span>}
-                  </td>
-                </tr>
-              ))}
+                  </>
+                );
+              })}
               {recent.length === 0 && !loading && (
                 <tr>
                   <td colSpan={7} className="px-4 py-12 text-center text-sm text-[var(--ink-soft)]">No claims match the active filters.</td>

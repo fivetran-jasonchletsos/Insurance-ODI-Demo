@@ -14,6 +14,7 @@ import ArchitecturePage from './pages/ArchitecturePage';
 import PipelinePage from './pages/PipelinePage';
 import WatchlistPage from './pages/WatchlistPage';
 import AboutPage from './pages/AboutPage';
+import RelatedClaimsPage from './pages/RelatedClaimsPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 const queryClient = new QueryClient({
@@ -41,6 +42,7 @@ export default function App() {
             <Route path="/architecture" element={<ArchitecturePage />} />
             <Route path="/pipeline" element={<PipelinePage />} />
             <Route path="/watchlist" element={<WatchlistPage />} />
+            <Route path="/related-claims" element={<RelatedClaimsPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
