@@ -12,7 +12,7 @@ export default function AskPage() {
         </h1>
         <p className="mt-3 max-w-3xl leading-relaxed" style={{ color: 'var(--ink-muted)' }}>
           Cortex Analyst reads the same Apache Iceberg gold tables in s3:// that Athena
-          and DuckDB read for the rest of Atlas Risk. No copy, no separate AI data
+          and DuckDB read for the rest of Meridian Re. No copy, no separate AI data
           product, no vendor-controlled gateway — the lake is the contract; Cortex is
           one more engine that plugs in.
         </p>

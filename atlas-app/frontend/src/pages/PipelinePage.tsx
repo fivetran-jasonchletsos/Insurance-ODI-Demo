@@ -31,7 +31,7 @@ export default function PipelinePage() {
         ? { ok: false, status: 'commit failed', detail: 'S3 + AWS Glue Iceberg catalog', failureDetail: 'Simulated: Glue catalog returned 503 during last Iceberg commit. Table snapshot uncommitted.' }
         : { ok: true, status: 'committed', detail: 'atlas-odi-lake bucket + AWS Glue Iceberg catalog. 14 tables across bronze · silver · gold.' },
       dbt: f.has('dbt')
-        ? { ok: false, status: 'run failed', detail: 'dbt build — model gold.fct_carrier_risk_signal', failureDetail: 'Simulated: model compilation failed. Test "unique_naic_code" returned 4 failures in silver.carriers.' }
+        ? { ok: false, status: 'run failed', detail: 'dbt build — carrier risk signal model', failureDetail: 'Simulated: model compilation failed. Test "unique_naic_code" returned 4 failures in the carrier conformed layer.' }
         : { ok: true, status: 'last run passed', detail: 'dbt build completed 3h ago. 8 staging + 4 silver + 6 gold models passed all tests.' },
       athena: f.has('athena')
         ? { ok: false, status: 'query failed', detail: 'AWS Athena query engine', failureDetail: 'Simulated: workgroup query quota exceeded. Retry after quota window resets at top of hour.' }
@@ -43,7 +43,7 @@ export default function PipelinePage() {
   const anyDown = !Object.values(layers).every((l) => l.ok);
 
   // Synthesize per-connector replication rows for the dark monitoring console.
-  // The real Atlas Risk pipeline runs 3 Fivetran custom connectors; throughput +
+  // The real Meridian Re pipeline runs 3 Fivetran custom connectors; throughput +
   // lag values here are illustrative — they walk a presenter through the
   // observability surface without requiring the Fivetran Platform Connector.
   const connectorsDown = failures.has('connectors');
@@ -66,13 +66,14 @@ export default function PipelinePage() {
     return [
       {
         id: 'oracle_pas',
-        name: 'Oracle · Policy Admin (Guidewire-style)',
+        name: 'Oracle · Policy Admin',
         schema: 'oracle_pas',
         service: 'oracle',
         sync_state: connectorsDown ? 'failed' : 'scheduled',
         failed_at: connectorsDown ? new Date().toISOString() : null,
         paused: false,
-        dashboard_url: 'https://fivetran.com/dashboard',
+        fivetran_id: 'oracle_pas_connector',
+        dashboard_url: 'https://fivetran.com/dashboard/connectors/oracle_pas_connector',
         destination: 'S3 Iceberg',
         source_db: 'Oracle 19c · LogMiner CDC',
         rows_synced_total: 14_820_000,
@@ -87,7 +88,8 @@ export default function PipelinePage() {
         sync_state: 'scheduled',
         failed_at: null,
         paused: false,
-        dashboard_url: 'https://fivetran.com/dashboard',
+        fivetran_id: 'sqlserver_claims_connector',
+        dashboard_url: 'https://fivetran.com/dashboard/connectors/sqlserver_claims_connector',
         destination: 'S3 Iceberg',
         source_db: 'SQL Server 2019 · Change Tracking',
         rows_synced_total: 8_640_000,
@@ -96,13 +98,14 @@ export default function PipelinePage() {
       },
       {
         id: 'naic_filings',
-        name: 'NAIC · Carrier filings (enrichment)',
+        name: 'NAIC · Carrier filings',
         schema: 'naic_filings',
         service: 'connector_sdk',
         sync_state: 'scheduled',
         failed_at: null,
         paused: false,
-        dashboard_url: 'https://fivetran.com/dashboard',
+        fivetran_id: 'naic_filings_connector',
+        dashboard_url: 'https://fivetran.com/dashboard/connectors/naic_filings_connector',
         destination: 'S3 Iceberg',
         source_db: 'NAIC public filings',
         rows_synced_total: 84_210,
@@ -111,13 +114,14 @@ export default function PipelinePage() {
       },
       {
         id: 'noaa_storm_events',
-        name: 'NOAA · Storm events (cat data)',
+        name: 'NOAA · Storm events',
         schema: 'noaa_storm_events',
         service: 'connector_sdk',
         sync_state: 'scheduled',
         failed_at: null,
         paused: false,
-        dashboard_url: 'https://fivetran.com/dashboard',
+        fivetran_id: 'noaa_storm_events_connector',
+        dashboard_url: 'https://fivetran.com/dashboard/connectors/noaa_storm_events_connector',
         destination: 'S3 Iceberg',
         source_db: 'NOAA NCEI API',
         rows_synced_total: 13_455,
@@ -130,13 +134,30 @@ export default function PipelinePage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <header className="mb-6 border-b border-[var(--hairline)] pb-4">
-        <div className="eyebrow mb-1">Pipeline Health</div>
-        <h1 className="font-serif text-3xl font-semibold tracking-tight text-[var(--ink-strong)]">End-to-end status</h1>
-        <p className="text-sm text-[var(--ink-muted)] mt-1 max-w-3xl leading-relaxed">
-          Live posture of every layer that produces the Atlas Risk underwriting surface: Fivetran custom connectors,
-          the S3-backed Apache Iceberg lake, dbt medallion transformations, and the AWS Athena query engine.
-          Toggle <em>Simulate failure</em> on any layer to walk through observability and incident response patterns.
-        </p>
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <div className="eyebrow mb-1">Pipeline Health</div>
+            <h1 className="font-serif text-3xl font-semibold tracking-tight text-[var(--ink-strong)]">End-to-end status</h1>
+            <p className="text-sm text-[var(--ink-muted)] mt-1 max-w-3xl leading-relaxed">
+              Live posture of every layer that produces the underwriting surface: Fivetran custom connectors,
+              the S3-backed Apache Iceberg lake, dbt medallion transformations, and the AWS Athena query engine.
+              Toggle <em>Simulate failure</em> on any layer to walk through observability and incident response patterns.
+            </p>
+          </div>
+          <a
+            href="https://fivetran.com/dashboard/connectors"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="shrink-0 inline-flex items-center gap-2 rounded-sm border border-[var(--hairline)] bg-white hover:border-[var(--gold)] hover:bg-[var(--gold-bg)] transition-colors px-4 py-2 text-xs font-semibold uppercase tracking-wider text-[var(--ink-muted)] hover:text-[var(--gold-dim)]"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" className="h-3.5 w-3.5" aria-hidden>
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+              <polyline points="15 3 21 3 21 9" />
+              <line x1="10" y1="14" x2="21" y2="3" />
+            </svg>
+            Open in Fivetran
+          </a>
+        </div>
       </header>
 
       <div

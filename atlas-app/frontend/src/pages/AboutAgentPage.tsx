@@ -34,7 +34,7 @@ const INTENTS = [
     label: 'Composite risk score',
     pattern: '/(risk|highest.+risk|risky|loss ratio)/i',
     example: 'Highest risk score in commercial property',
-    body: 'Ranks the universe by Atlas Risk\'s composite risk score, blending loss-ratio trend, claim velocity, cat-event proximity, and reserve adequacy.',
+    body: 'Ranks the universe by Meridian Re\'s composite risk score, blending loss-ratio trend, claim velocity, cat-event proximity, and reserve adequacy.',
   },
   {
     name: 'line_filter',
@@ -121,7 +121,7 @@ export default function AboutAgentPage() {
         <p className="text-[var(--ink)] leading-relaxed">
           When enabled, questions are sent to Claude with a structured summary of the snapshot
           (totals by sector, market-cap aggregates, risk-bucket histogram). The system prompt
-          casts Claude as a senior Atlas Risk underwriter — measured tone, no hype, no invented numbers.
+          casts Claude as a senior Meridian Re underwriter — measured tone, no hype, no invented numbers.
           The API key lives only in your browser's localStorage under{' '}
           <code className="font-mono text-xs bg-[var(--paper-deep)] px-1.5 py-0.5 rounded border border-[var(--hairline)]">atlas-odi:anthropic-api-key</code>.
         </p>

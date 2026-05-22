@@ -25,7 +25,7 @@ const DEMOS = [
   { key: 'tax-assessment', name: 'Allegheny County Tax', industry: 'Public sector · Property assessment', url: 'https://fivetran-jasonchletsos.github.io/tax-assessment-databricks-demo/', accent: '#dc2626' },
   { key: 'healthcare',     name: 'Epic Clarity',         industry: 'Healthcare · Clinical analytics',     url: 'https://fivetran-jasonchletsos.github.io/Healthcare-EPIC-Snowflake-Demo/', accent: '#0d9488' },
   { key: 'finserv',        name: 'Meridian Capital',     industry: 'Financial Services · Wealth & banking', url: 'https://fivetran-jasonchletsos.github.io/FinServ-ODI-Demo/', accent: '#1d4ed8' },
-  { key: 'insurance',      name: 'Atlas Risk',           industry: 'Insurance · Policies, claims, reinsurance', url: 'https://fivetran-jasonchletsos.github.io/Insurance-ODI-Demo/', accent: '#0369a1' },
+  { key: 'insurance',      name: 'Meridian Re',           industry: 'Insurance · Policies, claims, reinsurance', url: 'https://fivetran-jasonchletsos.github.io/Insurance-ODI-Demo/', accent: '#0369a1' },
   { key: 'media',          name: 'Lighthouse Media',     industry: 'Media · Audience intelligence',       url: 'https://fivetran-jasonchletsos.github.io/Media-ODI-Demo/', accent: '#7c3aed' },
   { key: 'retail',         name: 'Storefront Analytics', industry: 'Retail & e-commerce',                  url: 'https://fivetran-jasonchletsos.github.io/RetailEcom-ODI-Demo/', accent: '#ea580c' },
   { key: 'techsaas',       name: 'SaaS Pulse',           industry: 'Tech · SaaS analytics',                url: 'https://fivetran-jasonchletsos.github.io/TechSaaS-ODI-Demo/', accent: '#059669' },
@@ -92,7 +92,7 @@ export default function Layout() {
               </div>
               <div className="leading-tight min-w-0">
                 <div className="font-serif font-semibold text-lg sm:text-xl tracking-tight truncate">
-                  Atlas Risk
+                  Meridian Re
                 </div>
                 <div className="mt-0.5 text-[10px] sm:text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--gold-bright)]">
                   Underwriting & Claims Intelligence
@@ -252,7 +252,7 @@ export default function Layout() {
               <div className="h-7 w-7 rounded-sm flex items-center justify-center" style={{ background: 'var(--gold)' }}>
                 <AtlasMark className="h-4 w-4 text-[var(--navy-deep)]" />
               </div>
-              <div className="font-serif font-semibold text-white">Atlas Risk</div>
+              <div className="font-serif font-semibold text-white">Meridian Re</div>
             </div>
             <p className="leading-relaxed text-white/60">
               Underwriting intelligence backed by an open data lake. Public NAIC, NOAA, and OpenFEMA
@@ -276,7 +276,7 @@ export default function Layout() {
         </div>
         <div className="border-t border-white/10">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3 text-[11px] text-white/50 flex flex-col sm:flex-row gap-1 sm:items-center sm:justify-between">
-            <div>© 2026 Atlas Risk ODI Demo · Fivetran Open Data Infrastructure · Synthetic public data</div>
+            <div>© 2026 Meridian Re ODI Demo · Fivetran Open Data Infrastructure · Synthetic public data</div>
             <div>Snapshot {snapshotAt ? new Date(snapshotAt).toLocaleString() : '—'}</div>
           </div>
         </div>
@@ -382,7 +382,7 @@ function SearchIcon({ className = '' }: { className?: string }) {
   );
 }
 
-// Atlas Risk shield/globe mark (the firm's logo glyph)
+// Meridian Re shield/globe mark (the firm's logo glyph)
 function AtlasMark({ className = '' }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>

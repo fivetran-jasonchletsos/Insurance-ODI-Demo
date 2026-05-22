@@ -20,6 +20,7 @@ export interface PipelineRow {
   sync_state: string | null;
   failed_at: string | null;
   paused: boolean | null;
+  fivetran_id?: string;
   dashboard_url: string;
   // Destination this connector replicates into.
   destination: string;
@@ -243,13 +244,13 @@ export default function ReplicationPipelinesCard({
               {/* Pipeline */}
               <div className="min-w-0">
                 <a
-                  href={row.dashboard_url}
+                  href={row.fivetran_id ? `https://fivetran.com/dashboard/connectors/${row.fivetran_id}` : row.dashboard_url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center text-[15px] font-semibold leading-tight hover:underline"
                   style={{ color: '#f5f5f4' }}
                 >
-                  <span className="truncate">{row.schema || row.id}</span>
+                  <span className="truncate">{row.name || row.schema || row.id}</span>
                   <DestinationGlyph name={row.destination} />
                   <span style={{ color: '#a3a3a3' }} className="truncate">{row.destination.toLowerCase()}</span>
                 </a>

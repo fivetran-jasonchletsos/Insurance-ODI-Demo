@@ -78,7 +78,7 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-24 relative">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-end">
             <div className="lg:col-span-7">
-              <div className="eyebrow mb-4">Atlas Risk · Open Data Infrastructure</div>
+              <div className="eyebrow mb-4">Meridian Re · Open Data Infrastructure</div>
               <h1 className="font-serif text-4xl sm:text-6xl font-semibold text-[var(--ink-strong)] leading-[0.98] tracking-tight">
                 One lake.<br />
                 <span className="text-[var(--gold-dim)]">Every engine.</span><br />
@@ -243,8 +243,7 @@ export default function HomePage() {
             </h2>
             <p className="text-sm text-[var(--ink-muted)] mt-1 max-w-2xl">
               Risk score derived from{' '}
-              <span className="layer-chip gold ml-0.5">gold.fct_carrier_risk_signal</span>{' '}
-              — a single dbt model that blends loss-ratio trend, claim velocity, cat-event proximity,
+              the carrier risk signal mart — a single dbt model that blends loss-ratio trend, claim velocity, cat-event proximity,
               and reserve adequacy.
             </p>
           </div>
@@ -302,7 +301,7 @@ export default function HomePage() {
             <span className="text-[var(--gold-dim)]">So is openness.</span>"
           </p>
           <p className="mt-4 text-sm text-[var(--ink-muted)] max-w-2xl mx-auto">
-            Atlas Risk chose ODI because it gives the underwriting desk control over storage, compute,
+            Meridian Re chose ODI because it gives the underwriting desk control over storage, compute,
             cost, and shared context — and because the AI agents that come next will demand
             governed access to the lake, not a serial-port pipe through the warehouse.
           </p>

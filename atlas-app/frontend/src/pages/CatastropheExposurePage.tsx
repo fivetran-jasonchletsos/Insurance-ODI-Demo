@@ -1,5 +1,5 @@
 // Catastrophe Exposure & Loss Geography
-// CRO/CUO surface for the Atlas Risk demo.
+// CRO/CUO surface for the Meridian Re demo.
 //
 // What this view answers, in priority order:
 //   1) Where is our TIV book concentrated, and against what peril?
@@ -545,7 +545,7 @@ export default function CatastropheExposurePage() {
   );
 }
 
-// ─── KPI tile (local, matches Atlas Risk design system) ─────────────────────
+// ─── KPI tile (local, matches Meridian Re design system) ─────────────────────
 
 function KpiTile({
   label,
@@ -904,7 +904,7 @@ function buildCatStack(totalPml: number, totalPremium: number): CatLayer[] {
   const ilw       = Math.round(totalPml * 0.10);
   let stack = 0;
   const layers: CatLayer[] = [];
-  layers.push({ name: 'Net retention', attachment: 0, limit: retention, rol: 0, reinsurers: 'Atlas Risk balance sheet', color: '#0b2545' });
+  layers.push({ name: 'Net retention', attachment: 0, limit: retention, rol: 0, reinsurers: 'Meridian Re balance sheet', color: '#0b2545' });
   stack += retention;
   layers.push({ name: 'Quota share · 30%', attachment: stack, limit: qsLimit, rol: 0.048, reinsurers: 'Munich Re · Swiss Re · Hannover Re', color: '#1d4e89' });
   stack += qsLimit;

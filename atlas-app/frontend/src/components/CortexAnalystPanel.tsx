@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-// Cortex Analyst panel — Atlas Risk edition (light navy/gold theme).
+// Cortex Analyst panel — Meridian Re edition (light navy/gold theme).
 // Pre-baked NL question → highlighted SQL → narrative answer.
 // Demonstrates that the same Iceberg gold layer the dashboard reads is
 // queryable by Snowflake Cortex Analyst with no second copy of the data.
@@ -220,7 +220,7 @@ export default function CortexAnalystPanel() {
         </div>
         <p className="max-w-md text-sm leading-relaxed italic md:text-right" style={{ color: 'var(--ink-muted)' }}>
           Natural-language questions resolved to SQL against the dbt-modeled gold layer —
-          the same Iceberg tables the rest of Atlas Risk reads.
+          the same Iceberg tables the rest of Meridian Re reads.
         </p>
       </div>
 
