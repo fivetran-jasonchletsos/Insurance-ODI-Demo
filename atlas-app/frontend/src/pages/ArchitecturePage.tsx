@@ -86,7 +86,7 @@ export default function ArchitecturePage() {
           One lake. Every engine. Full control.
         </h1>
         <p className="mt-3 text-[var(--ink-muted)] max-w-3xl leading-relaxed">
-          Meridian Re's data plane treats <em>storage</em>, <em>catalog</em>, and <em>compute</em> as
+          Verity Insurance's data plane treats <em>storage</em>, <em>catalog</em>, and <em>compute</em> as
           three independently swappable layers. Iceberg is the storage spec. Glue is the catalog.
           Athena, DuckDB, Trino, Spark, and even Snowflake can all read the same tables — no copy,
           no extract, no proprietary format in the way.

@@ -1,5 +1,5 @@
 // ============================================================
-// Meridian Re Underwriting Copilot — local rules tier + optional Claude tier.
+// Verity Insurance Underwriting Copilot — local rules tier + optional Claude tier.
 // Pattern mirrors the sheetz/healthcare demo agents but adapted
 // for the FinServ-ODI dataset (Company-level reasoning over the
 // gold-layer fct_company_risk_signal mart).
@@ -247,7 +247,7 @@ function summarizeForClaude(companies: Company[]) {
   };
 }
 
-const SYSTEM = `You are a senior underwriter at Meridian Re, a commercial insurance and reinsurance advisory.
+const SYSTEM = `You are a senior underwriter at Verity Insurance, a commercial insurance and reinsurance advisory.
 You reason over a snapshot of the carrier universe and book sourced from NAIC filings, NOAA Storm Events, and OpenFEMA NFIP claims,
 materialized in an Apache Iceberg gold layer and exported to a JSON snapshot.
 

@@ -1,0 +1,46 @@
+{
+  "company": "Verity Insurance",
+  "request_id": "BLD-2026-05-23-0014",
+  "requested_by": "VP of Claims Analytics",
+  "requested_at": "2026-05-23T08:12:00-05:00",
+  "timezone_label": "Friday 08:12 CST",
+  "question": "Why did Hurricane-Beryl claim severity for tier-2 commercial wind exposure exceed our model by 38% in coastal Texas and Louisiana?",
+  "metric_label": "CAT wind severity by tier, region, and day",
+  "metric_code": "gold.fct_cat_wind_severity_by_tier_region_daily",
+  "sop_meeting_at": "2026-05-23T20:00:00-05:00",
+  "sop_meeting_label": "Friday 20:00 CST · Reserves Committee",
+  "target_schema": "gold",
+  "target_model": "fct_cat_wind_severity_by_tier_region_daily",
+  "target_grain": "one row per (policy_tier, region_code, loss_date)",
+  "prior_crisis_id": "INC-2026-05-21-0008",
+  "hospital_system": "Verity Insurance",
+  "service_line": "Tier-2 Commercial Wind",
+  "upstream_models": [
+    {
+      "model": "gold.fct_claim",
+      "layer": "gold",
+      "grain": "claim_id",
+      "description": "Paid and open claims from the SQL Server Claims Management system via Fivetran CDC. Includes loss_date, peril_code, policy_id, incurred_loss, and paid_loss."
+    },
+    {
+      "model": "gold.dim_policy",
+      "layer": "gold",
+      "grain": "policy_id (SCD-2)",
+      "description": "Policy master from Oracle PAS. Includes tier classification (tier-1 through tier-4), coverage_type, state_code, county_fips, debris_removal_sublimit, and effective dates."
+    },
+    {
+      "model": "gold.fct_premium",
+      "layer": "gold",
+      "grain": "policy_id · effective_year",
+      "description": "Annual written premium by policy. Includes exposure_basis, rate_change_pct, and cat_load applied at last renewal. Used to compute loss ratio and model adequacy."
+    },
+    {
+      "model": "gold.dim_peril",
+      "layer": "gold",
+      "grain": "peril_code",
+      "description": "Peril master including storm classification, NOAA event linkage, and regional model assumption set. Hurricane-Beryl maps to peril_code HU-2024-BERYL with Gulf Coast zone flags."
+    }
+  ],
+  "manual_time_days": "3 to 5 days",
+  "build_room_seconds": 90
+}

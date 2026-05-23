@@ -1,5 +1,5 @@
 // Catastrophe Exposure & Loss Geography
-// CRO/CUO surface for the Meridian Re demo.
+// CRO/CUO surface for the Verity Insurance demo.
 //
 // What this view answers, in priority order:
 //   1) Where is our TIV book concentrated, and against what peril?
@@ -298,9 +298,9 @@ export default function CatastropheExposurePage() {
           <ModePills mode={mode} setMode={setMode} />
         </div>
 
-        {/* Cortex narrative */}
+        {/* dbt-wizard narrative */}
         <NarrativeCard
-          eyebrow="Cortex · concentration brief"
+          eyebrow="dbt-wizard · concentration brief"
           story={
             <>
               Coastal Florida TIV is{' '}
@@ -545,7 +545,7 @@ export default function CatastropheExposurePage() {
   );
 }
 
-// ─── KPI tile (local, matches Meridian Re design system) ─────────────────────
+// ─── KPI tile (local, matches Verity Insurance design system) ────────────────
 
 function KpiTile({
   label,
@@ -618,7 +618,7 @@ function PeerBand({ position }: { position: number }) {
   );
 }
 
-// ─── Narrative card (Cortex auto-summary) ───────────────────────────────────
+// ─── Narrative card (dbt-wizard auto-summary) ───────────────────────────────
 
 function NarrativeCard({ eyebrow, story, highlight }: { eyebrow: string; story: React.ReactNode; highlight?: { label: string; value: string } }) {
   return (
@@ -628,7 +628,7 @@ function NarrativeCard({ eyebrow, story, highlight }: { eyebrow: string; story: 
     >
       <div className="absolute right-4 top-4 text-[10px] font-mono uppercase tracking-wider text-[var(--gold-dim)] flex items-center gap-1.5">
         <span className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--gold)] animate-pulse" />
-        Cortex narrative · auto
+        dbt-wizard summary · auto
       </div>
       <div className="eyebrow mb-2">{eyebrow}</div>
       <div className="font-serif text-lg sm:text-xl leading-snug text-[var(--ink-strong)] max-w-3xl">{story}</div>
@@ -904,7 +904,7 @@ function buildCatStack(totalPml: number, totalPremium: number): CatLayer[] {
   const ilw       = Math.round(totalPml * 0.10);
   let stack = 0;
   const layers: CatLayer[] = [];
-  layers.push({ name: 'Net retention', attachment: 0, limit: retention, rol: 0, reinsurers: 'Meridian Re balance sheet', color: '#0b2545' });
+  layers.push({ name: 'Net retention', attachment: 0, limit: retention, rol: 0, reinsurers: 'Verity Insurance balance sheet', color: '#0b2545' });
   stack += retention;
   layers.push({ name: 'Quota share · 30%', attachment: stack, limit: qsLimit, rol: 0.048, reinsurers: 'Munich Re · Swiss Re · Hannover Re', color: '#1d4e89' });
   stack += qsLimit;

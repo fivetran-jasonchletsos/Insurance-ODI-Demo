@@ -1,0 +1,116 @@
+{
+  "events": [
+    {
+      "from": "explorer",
+      "step": 1,
+      "step_label": "Discovery",
+      "body": "Running status against the dbt project. Project parses clean — 18 models, 84 tests, last refresh 06:10 CST.",
+      "side_effect": "tool:status returned ok · 18 models · 84 tests"
+    },
+    {
+      "from": "explorer",
+      "step": 1,
+      "step_label": "Discovery",
+      "body": "Running search for 'Hurricane Beryl', 'wind claim', 'cat severity', 'tier-2 commercial', 'debris removal', 'coastal Texas', 'Louisiana wind'. Four upstream models surface: gold.fct_claim, gold.dim_policy, gold.fct_premium, gold.dim_peril.",
+      "side_effect": "tool:search matched gold.fct_claim, gold.dim_policy, gold.fct_premium, gold.dim_peril"
+    },
+    {
+      "from": "summary",
+      "step": 2,
+      "step_label": "Schema Understanding",
+      "body": "Running describe on each candidate. gold.fct_claim is claim-grain with loss_date, peril_code, policy_id, incurred_loss, and paid_loss. gold.dim_policy carries tier classification, debris_removal_sublimit, state_code, and county_fips. gold.fct_premium tracks cat_load by policy and effective year. gold.dim_peril maps HU-2024-BERYL to Gulf Coast zone flags — that is the peril slice the Reserves Committee needs.",
+      "side_effect": "tool:describe returned grain=claim_id on fct_claim · grain=policy_id on dim_policy · grain=policy_id·effective_year on fct_premium · grain=peril_code on dim_peril"
+    },
+    {
+      "from": "summary",
+      "step": 2,
+      "step_label": "Schema Understanding",
+      "body": "Running lineage. Join path is clean: claims join to policies on policy_id, policies join to premiums on policy_id and effective_year, perils attach via peril_code. Gap confirmed — no model aggregates claim severity to (policy_tier, region_code, loss_date) for a named CAT event. That is exactly what gold.fct_cat_wind_severity_by_tier_region_daily needs to be.",
+      "side_effect": "tool:lineage validated join path · gap confirmed at tier-region-daily grain"
+    },
+    {
+      "from": "worker",
+      "step": 3,
+      "step_label": "Data Inspection",
+      "body": "Spinning up an XS warehouse and running dbt_show on Hurricane-Beryl coastal claims filtered to peril_code = 'HU-2024-BERYL' and state IN ('TX', 'LA'). Tier-2 commercial wind shows avg_severity_ratio of 1.38 versus the model assumption of 1.00 — the 38% excess is real and the grain is viable.",
+      "side_effect": "tool:warehouse start XS · tool:dbt_show HU-2024-BERYL coastal slice · severity_ratio 1.38 vs 1.00 model confirmed"
+    },
+    {
+      "from": "worker",
+      "step": 4,
+      "step_label": "Model Creation",
+      "body": "Authoring models/gold/fct_cat_wind_severity_by_tier_region_daily.sql. Writing the config block first — table materialization, gold schema, tags cat_analytics and ai_built.",
+      "code_target": "sql",
+      "code_append": "{{ config(materialized='table', schema='gold', tags=['cat_analytics', 'ai_built']) }}\n\n"
+    },
+    {
+      "from": "worker",
+      "step": 4,
+      "step_label": "Model Creation",
+      "body": "Writing the header docblock so actuaries and downstream readers know what this model is and who built it.",
+      "code_target": "sql",
+      "code_append": "-- gold.fct_cat_wind_severity_by_tier_region_daily\n-- CAT wind claim severity versus model assumption, by policy tier and region\n-- Grain: one row per (policy_tier, region_code, loss_date)\n-- Built live by dbt-wizard sub-agents in response to Reserves Committee escalation\n-- Sources: gold.fct_claim + gold.dim_policy + gold.fct_premium + gold.dim_peril\n\n"
+    },
+    {
+      "from": "worker",
+      "step": 4,
+      "step_label": "Model Creation",
+      "body": "Anchoring the beryl_claims CTE to Hurricane-Beryl wind claims in Gulf Coast states — that is the denominator for the severity ratio.",
+      "code_target": "sql",
+      "code_append": "with beryl_claims as (\n    select\n        c.claim_id,\n        c.policy_id,\n        c.loss_date,\n        c.incurred_loss,\n        c.paid_loss\n    from {{ ref('fct_claim') }} c\n    join {{ ref('dim_peril') }} p on p.peril_code = c.peril_code\n    where p.peril_code = 'HU-2024-BERYL'\n      and p.gulf_coast_flag = true\n),\n\n"
+    },
+    {
+      "from": "worker",
+      "step": 4,
+      "step_label": "Model Creation",
+      "body": "Pulling in policy tier, debris_removal_sublimit, state code, and county FIPS from dim_policy. Joining premium to get the cat_load model assumption per policy.",
+      "code_target": "sql",
+      "code_append": "policy_enriched as (\n    select\n        bc.claim_id,\n        bc.loss_date,\n        bc.incurred_loss,\n        dp.tier_code         as policy_tier,\n        dp.state_code        as region_code,\n        dp.debris_removal_sublimit,\n        coalesce(fp.cat_load, 1.0) as model_cat_load\n    from beryl_claims bc\n    join {{ ref('dim_policy') }} dp\n      on dp.policy_id = bc.policy_id\n     and dp.dbt_valid_to is null\n    left join {{ ref('fct_premium') }} fp\n      on fp.policy_id = bc.policy_id\n     and fp.effective_year = date_part('year', bc.loss_date)\n    where dp.coverage_type = 'WIND'\n      and dp.tier_code = 'TIER-2'\n      and dp.state_code in ('TX', 'LA')\n)\n\n"
+    },
+    {
+      "from": "worker",
+      "step": 4,
+      "step_label": "Model Creation",
+      "body": "Final SELECT — one row per (policy_tier, region_code, loss_date). Claim count, total incurred loss, average model assumption, actual average severity, and the ratio that quantifies the reserve gap.",
+      "code_target": "sql",
+      "code_append": "select\n    policy_tier,\n    region_code,\n    loss_date,\n    count(*)                                 as claim_count,\n    sum(incurred_loss)                        as total_incurred_loss,\n    avg(model_cat_load)                       as avg_model_assumption,\n    avg(incurred_loss)                        as avg_actual_severity,\n    avg(incurred_loss) / nullif(avg(model_cat_load), 0)\n                                              as avg_severity_ratio,\n    sum(case when incurred_loss / nullif(model_cat_load, 0) > 1.2\n             then 1 else 0 end)               as over_model_claims\nfrom policy_enriched\ngroup by 1, 2, 3\norder by loss_date desc, region_code, policy_tier\n"
+    },
+    {
+      "from": "verification",
+      "step": 5,
+      "step_label": "Test Authoring",
+      "body": "Writing the YAML companion. Description first, then the schema contract — every column gets a type so actuaries and downstream consumers can resolve it without ambiguity.",
+      "code_target": "yaml",
+      "code_append": "version: 2\n\nmodels:\n  - name: fct_cat_wind_severity_by_tier_region_daily\n    description: |\n      CAT wind claim severity versus model assumption aggregated to\n      (policy_tier, region_code, loss_date). Denominator is all\n      Hurricane-Beryl wind claims for Gulf Coast states.\n      Built by dbt-wizard sub-agents on 2026-05-23\n      in response to Reserves Committee escalation on the tier-2\n      coastal wind severity deviation.\n    config:\n      contract:\n        enforced: true\n      tags: [cat_analytics, ai_built]\n      meta:\n        owner: cat_actuarial\n        built_by: dbt-wizard\n        consumes: [fct_claim, dim_policy, fct_premium, dim_peril]\n\n"
+    },
+    {
+      "from": "verification",
+      "step": 5,
+      "step_label": "Test Authoring",
+      "body": "Adding column-level tests. Uniqueness on the composite key (policy_tier, region_code, loss_date). Not-null on avg_severity_ratio and claim_count. Accepted values on region_code to catch state-code taxonomy drift.",
+      "code_target": "yaml",
+      "code_append": "    columns:\n      - name: policy_tier\n        data_type: varchar\n        tests:\n          - not_null\n          - accepted_values:\n              values: ['TIER-1', 'TIER-2', 'TIER-3', 'TIER-4']\n      - name: region_code\n        data_type: varchar\n        tests:\n          - not_null\n          - accepted_values:\n              values: ['TX', 'LA', 'FL', 'MS', 'AL', 'GA', 'SC', 'NC']\n      - name: loss_date\n        data_type: date\n        tests:\n          - not_null\n      - name: claim_count\n        data_type: number\n        tests:\n          - not_null\n      - name: total_incurred_loss\n        data_type: number\n      - name: avg_model_assumption\n        data_type: number\n      - name: avg_actual_severity\n        data_type: number\n      - name: avg_severity_ratio\n        data_type: number\n        tests:\n          - not_null\n      - name: over_model_claims\n        data_type: number\n\n    tests:\n      - dbt_utils.unique_combination_of_columns:\n          combination_of_columns: [policy_tier, region_code, loss_date]\n"
+    },
+    {
+      "from": "verification",
+      "step": 5,
+      "step_label": "Test Authoring",
+      "body": "Running dbt_show on the compiled model against the Hurricane-Beryl slice. All column tests resolve clean. Schema contract enforces. The tier-2 coastal wind severity ratio of 1.38 is visible in the first rows for TX and LA — 22 of 34 over-model claims share the outdated debris-removal sublimit clause.",
+      "side_effect": "tool:dbt_show compiled · tests:passed · contract:enforced · severity_ratio 1.38 confirmed · 22/34 over-model share debris_removal_sublimit clause"
+    },
+    {
+      "from": "worker",
+      "step": 6,
+      "step_label": "Materialization",
+      "body": "Materializing gold.fct_cat_wind_severity_by_tier_region_daily to Snowflake via the dbt adapter. Writing to the gold schema. Registering with the catalog.",
+      "side_effect": "tool:dbt_run materialized 1 model · 312 rows · 0.02 GB · 8.4s"
+    },
+    {
+      "from": "verification",
+      "step": 6,
+      "step_label": "Materialization",
+      "body": "Running lineage one more time. Four upstreams attached. Downstream consumers — cat-loss dashboards, Reserves Committee brief, reinsurance treaty pricing feeds, Snowflake direct queries — can now resolve the new gold table on their next pass. The Reserves Committee's question has a production asset behind it.",
+      "side_effect": "tool:lineage updated · downstream consumers notified · 18 models → 19 models"
+    }
+  ]
+}

@@ -1,7 +1,7 @@
-// Related-claims similarity engine — Meridian Re
+// Related-claims similarity engine — Verity Insurance
 //
 // Computes a top-K nearest-neighbor list for each claim using tag-vector
-// overlap (Jaccard) with domain weights.  Mirrors what a Cortex embedding
+// overlap (Jaccard) with domain weights. Mirrors what an embedding
 // pipeline would produce in production; the math runs locally so the static
 // site can ship the network without a runtime API.
 //

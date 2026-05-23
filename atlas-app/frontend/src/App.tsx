@@ -16,6 +16,9 @@ import WatchlistPage from './pages/WatchlistPage';
 import AboutPage from './pages/AboutPage';
 import RelatedClaimsPage from './pages/RelatedClaimsPage';
 import NotFoundPage from './pages/NotFoundPage';
+import VerityScenarioPage from './pages/VerityScenarioPage';
+import WizardLivePage from './pages/WizardLivePage';
+import VerityOutcomePage from './pages/VerityOutcomePage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -44,6 +47,9 @@ export default function App() {
             <Route path="/watchlist" element={<WatchlistPage />} />
             <Route path="/related-claims" element={<RelatedClaimsPage />} />
             <Route path="/about" element={<AboutPage />} />
+            <Route path="/scenario" element={<VerityScenarioPage />} />
+            <Route path="/wizard-live" element={<WizardLivePage />} />
+            <Route path="/outcome" element={<VerityOutcomePage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>

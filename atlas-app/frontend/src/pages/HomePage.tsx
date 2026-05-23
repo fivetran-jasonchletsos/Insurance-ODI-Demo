@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { api, formatBytes, formatCurrencyShort, formatNumber } from '../api/queries';
 import type { SummaryStats, Company } from '../types';
 import Sparkline from '../components/Sparkline';
@@ -78,7 +78,7 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-24 relative">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-end">
             <div className="lg:col-span-7">
-              <div className="eyebrow mb-4">Meridian Re · Open Data Infrastructure</div>
+              <div className="eyebrow mb-4">Verity Insurance · Open Data Infrastructure</div>
               <h1 className="font-serif text-4xl sm:text-6xl font-semibold text-[var(--ink-strong)] leading-[0.98] tracking-tight">
                 One lake.<br />
                 <span className="text-[var(--gold-dim)]">Every engine.</span><br />
@@ -143,6 +143,43 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* dbt-wizard scenario CTA */}
+      <section className="mx-auto max-w-7xl px-4 pt-10 pb-2 sm:px-6 lg:px-8">
+        <div
+          className="rounded-lg border border-[var(--hairline)] bg-white p-5 sm:p-7 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5"
+          style={{ borderLeft: '4px solid var(--clinical-teal, #0d9488)' }}
+        >
+          <div>
+            <div className="eyebrow mb-1" style={{ color: 'var(--clinical-teal, #0d9488)' }}>dbt-wizard · Live demo</div>
+            <h2 className="font-serif text-xl sm:text-2xl font-semibold text-[var(--ink-strong)] tracking-tight leading-snug">
+              VP of Claims asks why Hurricane-Beryl severity exceeded the model by 38%.
+            </h2>
+            <p className="mt-2 text-sm text-[var(--ink-muted)] leading-relaxed max-w-2xl">
+              Four sub-agents surface the upstream models, author the SQL, write the tests, and materialize
+              a new gold table in 90 seconds — root cause identified before the Reserves Committee meets.
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-2 shrink-0">
+            <Link
+              to="/scenario"
+              className="inline-flex items-center gap-2 rounded-md font-semibold text-sm px-5 py-3 whitespace-nowrap border border-[var(--hairline)] bg-white text-[var(--ink-strong)] hover:border-[var(--clinical-teal,#0d9488)] transition-colors"
+            >
+              Read the scenario
+            </Link>
+            <Link
+              to="/wizard-live"
+              className="inline-flex items-center gap-2 rounded-md text-white font-semibold text-sm px-5 py-3 whitespace-nowrap hover:opacity-95 transition-opacity"
+              style={{ background: 'var(--clinical-teal, #0d9488)' }}
+            >
+              Open the Live Build
+              <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <path d="M5 12h14M13 5l7 7-7 7" />
+              </svg>
+            </Link>
           </div>
         </div>
       </section>
@@ -301,7 +338,7 @@ export default function HomePage() {
             <span className="text-[var(--gold-dim)]">So is openness.</span>"
           </p>
           <p className="mt-4 text-sm text-[var(--ink-muted)] max-w-2xl mx-auto">
-            Meridian Re chose ODI because it gives the underwriting desk control over storage, compute,
+            Verity Insurance chose ODI because it gives the underwriting desk control over storage, compute,
             cost, and shared context — and because the AI agents that come next will demand
             governed access to the lake, not a serial-port pipe through the warehouse.
           </p>

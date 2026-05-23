@@ -1,0 +1,104 @@
+{
+  "materialized_model": "gold.fct_cat_wind_severity_by_tier_region_daily",
+  "row_count": 312,
+  "tests_passed": 9,
+  "tests_written": "7 column-level + 1 combination + 1 not-null on avg_severity_ratio",
+  "build_seconds": 90,
+  "before": {
+    "nodes": [
+      { "id": "fct_claim",   "name": "gold.fct_claim",   "layer": "gold" },
+      { "id": "dim_policy",  "name": "gold.dim_policy",  "layer": "gold" },
+      { "id": "fct_premium", "name": "gold.fct_premium", "layer": "gold" },
+      { "id": "dim_peril",   "name": "gold.dim_peril",   "layer": "gold" },
+      { "id": "gap", "name": "gold.fct_cat_wind_severity_by_tier_region_daily", "layer": "gap", "built": false }
+    ],
+    "edges": [
+      { "from": "fct_claim",   "to": "gap" },
+      { "from": "dim_policy",  "to": "gap" },
+      { "from": "fct_premium", "to": "gap" },
+      { "from": "dim_peril",   "to": "gap" }
+    ]
+  },
+  "after": {
+    "nodes": [
+      { "id": "fct_claim",   "name": "gold.fct_claim",   "layer": "gold" },
+      { "id": "dim_policy",  "name": "gold.dim_policy",  "layer": "gold" },
+      { "id": "fct_premium", "name": "gold.fct_premium", "layer": "gold" },
+      { "id": "dim_peril",   "name": "gold.dim_peril",   "layer": "gold" },
+      { "id": "new_gold", "name": "gold.fct_cat_wind_severity_by_tier_region_daily", "layer": "gold", "built": true, "new": true },
+      { "id": "reserves_dash", "name": "Reserves Committee Brief",    "layer": "consumer" },
+      { "id": "reins_feed",    "name": "Reinsurance Treaty Pricing",  "layer": "consumer" }
+    ],
+    "edges": [
+      { "from": "fct_claim",   "to": "new_gold" },
+      { "from": "dim_policy",  "to": "new_gold" },
+      { "from": "fct_premium", "to": "new_gold" },
+      { "from": "dim_peril",   "to": "new_gold" },
+      { "from": "new_gold", "to": "reserves_dash" },
+      { "from": "new_gold", "to": "reins_feed" }
+    ]
+  },
+  "root_cause": {
+    "headline": "Tier-2 commercial wind policies in coastal Texas and Louisiana share an outdated debris-removal sublimit that has not been re-tuned since 2024",
+    "detail": "22 of 34 over-model Hurricane-Beryl claims share a single policy clause signature: a debris-removal sublimit set at $25K per occurrence, unchanged since the 2024 policy year. Post-Beryl, actual debris-removal costs ran $38–52K in coastal counties, absorbing more incurred loss than the cat model assumed. Tier-1 and tier-3 policies in the same counties show normal severity ratios because their sublimits were updated at the 2025 renewal cycle. The fix is a clause-level pricing adjustment at the next renewal — not a model failure.",
+    "affected_cohort": "Tier-2 commercial wind, TX and LA coastal counties, debris_removal_sublimit = $25K",
+    "fallout_count": 22,
+    "total_reviewed": 34
+  },
+  "without_wizard": {
+    "label": "Without dbt-wizard",
+    "summary": "Question enters the actuarial backlog. Reserves Committee meets without the root-cause finding.",
+    "metrics": [
+      { "label": "Time to model",             "value": "3 to 5 days" },
+      { "label": "Actuary hours",              "value": "10 to 16h" },
+      { "label": "Tests written",              "value": "ad-hoc" },
+      { "label": "Lineage entries",            "value": "manual" },
+      { "label": "Documentation",              "value": "PR-time only" },
+      { "label": "Reserves Committee status",  "value": "no root cause" }
+    ],
+    "narrative": [
+      "VP of Claims files the request. It enters the actuarial analytics backlog at priority B.",
+      "Data engineer scopes the work Monday morning — four days after the committee.",
+      "Engineer writes SQL from scratch, joining four gold tables by hand.",
+      "Tests, YAML, and contract get bolted on at PR time — sometimes.",
+      "Actuarial team cannot isolate the debris-removal sublimit clause before the committee.",
+      "Reserve adjustment is delayed. Quarter-end close carries a $8.4M open item."
+    ]
+  },
+  "with_wizard": {
+    "label": "With dbt-wizard",
+    "summary": "Four sub-agents surface the upstreams, author the SQL, write the tests, and materialize the asset in 90 seconds.",
+    "metrics": [
+      { "label": "Time to model",             "value": "90 seconds" },
+      { "label": "Actuary hours",              "value": "0.0h authored" },
+      { "label": "Tests written",              "value": "7 column + 1 combination + 1 not-null" },
+      { "label": "Lineage entries",            "value": "auto, 4 upstream" },
+      { "label": "Documentation",              "value": "in YAML on materialize" },
+      { "label": "Reserves Committee status",  "value": "root cause in hand" }
+    ],
+    "narrative": [
+      "Explorer runs status and search. Returns the four gold upstream candidates.",
+      "Summary runs describe and lineage. Confirms join path and names the new grain.",
+      "Worker runs dbt_show on the Beryl coastal slice. Validates the proposed grain.",
+      "Worker authors fct_cat_wind_severity_by_tier_region_daily.sql with CTEs and final SELECT.",
+      "Verification writes the YAML — description, schema contract, 9 tests, ownership.",
+      "Worker materializes the table to Snowflake. Verification confirms downstream lineage.",
+      "Reserves Committee receives the root-cause finding and approves the $8.4M adjustment before quarter-end."
+    ]
+  },
+  "governance": [
+    { "label": "Tests written",            "value": "7 column-level + 1 combination + 1 not-null" },
+    { "label": "Schema contract",          "value": "enforced on materialize" },
+    { "label": "Lineage upstreams",        "value": "4 declared, 4 validated" },
+    { "label": "Documentation",            "value": "auto-written in YAML" },
+    { "label": "Ownership",               "value": "cat_actuarial" },
+    { "label": "Tag",                      "value": "ai_built · cat_analytics" },
+    { "label": "Snowflake table format",   "value": "standard table · Snowflake native" },
+    { "label": "Open Catalog registration","value": "complete" }
+  ],
+  "hero": {
+    "label": "Root cause identified before the Reserves Committee meets — $8.4M reserve adjustment made before quarter-end",
+    "value": "90 seconds",
+    "note": "From VP of Claims question to materialized Snowflake gold table — versioned, tested, documented, lineage-tracked. The actuarial team now knows the debris-removal sublimit clause is the driver. The fix is a pricing adjustment at the next renewal, not a catastrophe model failure."
+  }
+}

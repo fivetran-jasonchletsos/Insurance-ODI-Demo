@@ -26,9 +26,9 @@ export default function AboutPage() {
 
       <header className="mb-8">
         <div className="eyebrow mb-1">ODI Reference Architecture</div>
-        <h1 className="font-serif text-3xl font-semibold tracking-tight text-[var(--ink-strong)]">About Meridian Re</h1>
+        <h1 className="font-serif text-3xl font-semibold tracking-tight text-[var(--ink-strong)]">About Verity Insurance</h1>
         <p className="mt-3 text-[var(--ink-muted)] leading-relaxed">
-          Meridian Re is a reference build that demonstrates how a commercial-insurance and reinsurance
+          Verity Insurance is a reference build that demonstrates how a commercial-insurance and reinsurance
           desk can be powered entirely by Fivetran's Open Data Infrastructure — Fivetran custom connectors
           landing legacy core-system data (Oracle Policy Admin + SQL Server Claims) and public enrichment (NAIC carrier filings, NOAA Storm Events)
           directly into a customer-owned Apache Iceberg lake on S3, with dbt building the analytics layer
@@ -118,7 +118,7 @@ export default function AboutPage() {
         <div className="eyebrow mb-2" style={{ color: 'var(--caution)' }}>Disclaimer</div>
         <p className="text-[var(--ink-muted)] leading-relaxed">
           <strong className="text-[var(--ink-strong)]">All data shown is synthetic or sampled from public sources</strong>{' '}
-          (Oracle PAS + SQL Server Claims as the legacy core; NAIC and NOAA as public enrichment) and aggregated for demonstration purposes. Meridian Re
+          (Oracle PAS + SQL Server Claims as the legacy core; NAIC and NOAA as public enrichment) and aggregated for demonstration purposes. Verity Insurance
           is a fictional insurance advisory. No portion of this site constitutes underwriting advice or a binding quote.
         </p>
       </section>

@@ -43,7 +43,7 @@ export default function PipelinePage() {
   const anyDown = !Object.values(layers).every((l) => l.ok);
 
   // Synthesize per-connector replication rows for the dark monitoring console.
-  // The real Meridian Re pipeline runs 3 Fivetran custom connectors; throughput +
+  // The real Verity Insurance pipeline runs 3 Fivetran custom connectors; throughput +
   // lag values here are illustrative — they walk a presenter through the
   // observability surface without requiring the Fivetran Platform Connector.
   const connectorsDown = failures.has('connectors');

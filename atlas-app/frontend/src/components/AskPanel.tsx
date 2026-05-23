@@ -1,9 +1,9 @@
 import { useState } from 'react';
 
-// Cortex Analyst panel — Meridian Re edition (light navy/gold theme).
+// Ask panel — Verity Insurance edition (light navy/gold theme).
 // Pre-baked NL question → highlighted SQL → narrative answer.
 // Demonstrates that the same Iceberg gold layer the dashboard reads is
-// queryable by Snowflake Cortex Analyst with no second copy of the data.
+// queryable by dbt-wizard with no second copy of the data.
 
 type Token = { text: string; color?: string };
 
@@ -59,7 +59,7 @@ function SQLBlock({ sql }: { sql: string }) {
   );
 }
 
-type CortexQuestion = {
+type AskQuestion = {
   id: string;
   question: string;
   sql: string;
@@ -67,7 +67,7 @@ type CortexQuestion = {
   data: { label: string; value: string }[];
 };
 
-const QUESTIONS: CortexQuestion[] = [
+const QUESTIONS: AskQuestion[] = [
   {
     id: 'cat-exposure',
     question: 'Which insurers have the highest catastrophe exposure in coastal counties?',
@@ -83,7 +83,7 @@ WHERE  e.coastal_flag = TRUE
 GROUP  BY 1, 2, 3
 ORDER  BY total_insured_value DESC
 LIMIT  15;`,
-    narrative: `Three Florida carriers carry over $42B in TIV in counties scored above 8 on the storm-surge index, more than the next ten combined. The exposure was masked at the carrier-aggregate level — Cortex picked it up because it reads gold/fct_exposure at the county grain, the same way our /exposure page does.`,
+    narrative: `Three Florida carriers carry over $42B in TIV in counties scored above 8 on the storm-surge index, more than the next ten combined. The exposure was masked at the carrier-aggregate level — the query surface picked it up because it reads gold/fct_exposure at the county grain, the same way the /exposure page does.`,
     data: [
       { label: 'Carriers above $10B coastal TIV', value: '7' },
       { label: 'Top county exposure', value: 'Lee, FL — $18.4B' },
@@ -143,7 +143,7 @@ WHERE  claim_date >= CURRENT_DATE - INTERVAL '24 months'
   AND  status = 'closed'
 GROUP  BY 1, 2
 ORDER  BY 1 ASC, 2 ASC;`,
-    narrative: `Property severity is up 18% YoY (driven by building-materials inflation); auto liability up 11%; workers' comp flat. The composite combined ratio implied by these trends pushes 102% if pricing stays where it is — a renewal-cycle conversation Cortex can surface as a single question.`,
+    narrative: `Property severity is up 18% YoY (driven by building-materials inflation); auto liability up 11%; workers' comp flat. The composite combined ratio implied by these trends pushes 102% if pricing stays where it is — a renewal-cycle conversation that surfaces from a single gold-layer query.`,
     data: [
       { label: 'Property severity YoY', value: '+18.4%' },
       { label: 'Auto liability YoY', value: '+11.1%' },
@@ -169,7 +169,7 @@ u AS (
 SELECT  m.q, m.ten_year_yield, u.uw_income
 FROM    m JOIN u USING (q)
 ORDER   BY m.q ASC;`,
-    narrative: `Pearson correlation of 0.62 between the 10-year yield and aggregated underwriting income, on a one-quarter lag. The mechanism is the float-investment loop: as the yield rises, carriers can underwrite tighter without losing total return. A rate-cut cycle would compress underwriting margin within two quarters.`,
+    narrative: `Pearson correlation of 0.62 between the 10-year yield and aggregated underwriting income, on a one-quarter lag. The mechanism is the float-investment loop: as the yield rises, carriers can underwrite tighter without losing total return. A rate-cut cycle would compress underwriting margin within two quarters. Same gold table the macro chart reads — no second copy.`,
     data: [
       { label: 'Lagged correlation', value: '0.62' },
       { label: 'Best lag', value: '+1 quarter' },
@@ -192,7 +192,7 @@ FROM   gold.fct_carrier_financials
 WHERE  period_end >= CURRENT_DATE - INTERVAL '12 months'
 GROUP  BY 1
 ORDER  BY avg_loss_ratio DESC;`,
-    narrative: `Tier 4 carriers (sub-$250M DWP) post a 73.8% loss ratio vs Tier 1's 64.2% — a 950-bp gap that compounds with their thinner reinsurance cession. The same dim_carrier rollup backs the /holdings page; Cortex applied a different segmentation without rebuilding anything.`,
+    narrative: `Tier 4 carriers (sub-$250M DWP) post a 73.8% loss ratio vs Tier 1's 64.2% — a 950-bp gap that compounds with their thinner reinsurance cession. The same dim_carrier rollup backs the /holdings page; this query applied a different segmentation without rebuilding anything.`,
     data: [
       { label: 'Tier 1 loss ratio', value: '64.2%' },
       { label: 'Tier 4 loss ratio', value: '73.8%' },
@@ -203,7 +203,7 @@ ORDER  BY avg_loss_ratio DESC;`,
 
 const KICKER = 'font-mono text-[10px] uppercase tracking-[0.3em]';
 
-export default function CortexAnalystPanel() {
+export default function AskPanel() {
   const [activeId, setActiveId] = useState<string>(QUESTIONS[0].id);
   const active = QUESTIONS.find((q) => q.id === activeId) ?? QUESTIONS[0];
 
@@ -212,7 +212,7 @@ export default function CortexAnalystPanel() {
       <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
           <p className={`${KICKER}`} style={{ color: 'var(--gold)' }}>
-            Snowflake · Cortex Analyst
+            Snowflake · dbt-wizard
           </p>
           <h2 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl" style={{ color: 'var(--navy-deep)' }}>
             Ask the lake.
@@ -220,7 +220,7 @@ export default function CortexAnalystPanel() {
         </div>
         <p className="max-w-md text-sm leading-relaxed italic md:text-right" style={{ color: 'var(--ink-muted)' }}>
           Natural-language questions resolved to SQL against the dbt-modeled gold layer —
-          the same Iceberg tables the rest of Meridian Re reads.
+          the same Iceberg tables the rest of Verity Insurance reads.
         </p>
       </div>
 
@@ -263,7 +263,7 @@ export default function CortexAnalystPanel() {
           </div>
 
           <div className="flex-1 px-5 py-5">
-            <p className={`${KICKER} mb-4`} style={{ color: 'var(--ink-muted)' }}>Cortex Analyst response</p>
+            <p className={`${KICKER} mb-4`} style={{ color: 'var(--ink-muted)' }}>Analysis response</p>
             <div className="p-4 mb-4" style={{ background: 'var(--paper-deep)', border: '1px solid var(--hairline)' }}>
               <p className="text-sm leading-relaxed" style={{ color: 'var(--ink)' }}>{active.narrative}</p>
             </div>
@@ -279,7 +279,7 @@ export default function CortexAnalystPanel() {
 
           <div className="px-5 py-3 flex items-center gap-3" style={{ borderTop: '1px solid var(--hairline)', background: 'var(--paper)' }}>
             <SnowflakeMark />
-            <p className={`${KICKER}`} style={{ color: 'var(--ink-soft)' }}>Powered by Snowflake Cortex Analyst</p>
+            <p className={`${KICKER}`} style={{ color: 'var(--ink-soft)' }}>Powered by dbt-wizard on Snowflake</p>
           </div>
         </div>
       </div>
