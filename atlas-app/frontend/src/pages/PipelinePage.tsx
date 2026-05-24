@@ -29,13 +29,13 @@ export default function PipelinePage() {
         : { ok: true, status: 'on schedule', detail: '3 Fivetran custom connectors (NAIC · NOAA Storm Events · OpenFEMA NFIP). Last sync 4h ago. Next sync in 2h.' },
       s3_iceberg: f.has('s3_iceberg')
         ? { ok: false, status: 'commit failed', detail: 'S3 + AWS Glue Iceberg catalog', failureDetail: 'Simulated: Glue catalog returned 503 during last Iceberg commit. Table snapshot uncommitted.' }
-        : { ok: true, status: 'committed', detail: 'atlas-odi-lake bucket + AWS Glue Iceberg catalog. 14 tables across bronze · silver · gold.' },
+        : { ok: true, status: 'committed', detail: 'verity-odi-lake bucket + AWS Glue Iceberg catalog. 14 tables across bronze · silver · gold.' },
       dbt: f.has('dbt')
         ? { ok: false, status: 'run failed', detail: 'dbt build — carrier risk signal model', failureDetail: 'Simulated: model compilation failed. Test "unique_naic_code" returned 4 failures in the carrier conformed layer.' }
         : { ok: true, status: 'last run passed', detail: 'dbt build completed 3h ago. 8 staging + 4 silver + 6 gold models passed all tests.' },
       athena: f.has('athena')
         ? { ok: false, status: 'query failed', detail: 'AWS Athena query engine', failureDetail: 'Simulated: workgroup query quota exceeded. Retry after quota window resets at top of hour.' }
-        : { ok: true, status: 'operational', detail: 'AWS Athena workgroup atlas-odi. Iceberg-aware engine v3. Avg query 1.4s.' },
+        : { ok: true, status: 'operational', detail: 'AWS Athena workgroup verity-odi. Iceberg-aware engine v3. Avg query 1.4s.' },
     };
   }, [failures]);
 
@@ -209,7 +209,7 @@ export default function PipelinePage() {
       </Section>
 
       <Section n={2} title="S3 + Iceberg lake" layer={layers.s3_iceberg} sim={failures.has('s3_iceberg')} onSim={() => toggle('s3_iceberg')}>
-        <KV k="Bucket" v="s3://atlas-odi-lake/" mono />
+        <KV k="Bucket" v="s3://verity-odi-lake/" mono />
         <KV k="Catalog" v="AWS Glue Data Catalog (Iceberg REST)" />
         <KV k="Tables" v="14 across bronze · silver · gold" />
         <KV k="Format" v="Apache Iceberg v2 · Parquet files · ZSTD compression" />
@@ -223,7 +223,7 @@ export default function PipelinePage() {
       </Section>
 
       <Section n={4} title="AWS Athena query engine" layer={layers.athena} sim={failures.has('athena')} onSim={() => toggle('athena')}>
-        <KV k="Workgroup" v="atlas-odi" mono />
+        <KV k="Workgroup" v="verity-odi" mono />
         <KV k="Engine" v="Athena engine v3 (Trino) — Iceberg-aware" />
         <KV k="Snapshot export" v="scripts/build_snapshot.py → /public/data/*.json" />
         <KV k="Auth" v="IAM role with Glue:GetTable + S3:GetObject" />

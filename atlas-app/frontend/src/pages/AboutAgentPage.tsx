@@ -123,7 +123,7 @@ export default function AboutAgentPage() {
           (totals by sector, market-cap aggregates, risk-bucket histogram). The system prompt
           casts Claude as a senior Verity Insurance underwriter — measured tone, no hype, no invented numbers.
           The API key lives only in your browser's localStorage under{' '}
-          <code className="font-mono text-xs bg-[var(--paper-deep)] px-1.5 py-0.5 rounded border border-[var(--hairline)]">atlas-odi:anthropic-api-key</code>.
+          <code className="font-mono text-xs bg-[var(--paper-deep)] px-1.5 py-0.5 rounded border border-[var(--hairline)]">verity-odi:anthropic-api-key</code>.
         </p>
       </section>
     </div>

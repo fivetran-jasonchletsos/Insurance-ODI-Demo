@@ -21,7 +21,7 @@ LIMIT 25;`,
 LOAD iceberg;
 
 SELECT *
-FROM iceberg_scan('s3://atlas-odi-lake/gold/fct_claims/')
+FROM iceberg_scan('s3://verity-odi-lake/gold/fct_claims/')
 WHERE peril = 'flood'
 LIMIT 100;`,
   },
