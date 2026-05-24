@@ -22,6 +22,7 @@ const NAV_ITEMS: [string, string][] = [
   ['/ask', 'Ask'],
   ['/architecture', 'ODI Architecture'],
   ['/pipeline', 'Pipeline'],
+  ['/dbt-wizard', 'Wizard'],
   ['/about', 'About'],
 ];
 
