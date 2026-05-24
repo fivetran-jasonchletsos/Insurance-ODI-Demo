@@ -28,38 +28,41 @@ snapshot. Skip to **AWS deployment** below to wire it to live data.
 
 ```
    ┌────────────────────────────────────────────────────────────┐
-   │  Three public APIs                                         │
-   │  NAIC · NOAA Storm Events · OpenFEMA NFIP                  │
+   │  Sources                                                    │
+   │  Oracle PAS · SQL Server Claims · NAIC · NOAA Storm Events │
    └────────────────────────────┬───────────────────────────────┘
-                                │  3 Fivetran custom connectors (SDK)
+                                │  Fivetran (Binary Log Reader + Change Tracking + SDK)
                                 ▼
    ┌────────────────────────────────────────────────────────────┐
-   │  AWS S3 — Apache Iceberg tables in 3 schemas               │
-   │    bronze_sec_edgar.{companies, filings, xbrl_facts}        │
-   │    bronze_fred.{series, observations}                       │
-   │    bronze_cfpb.{complaints}                                 │
-   │  Registered in AWS Glue Data Catalog                        │
+   │  Iceberg (MDLS) on S3 — one copy of the bytes              │
+   │    Apache Iceberg v2 · AWS Glue Data Catalog                │
+   │    bronze / silver / gold prefixes                          │
    └────────────────────────────┬───────────────────────────────┘
-                                │  dbt (silver = view, gold = Iceberg)
+                                │  External table catalogs (no copies, no extracts)
                                 ▼
    ┌────────────────────────────────────────────────────────────┐
-   │  Silver — staging + intermediate conformed models           │
-   │  Gold   — marts + dbt semantic layer (7 metrics)            │
-   │    dim_companies · fct_filings · fct_macro_observations     │
-   │    fct_complaints · fct_company_risk_signal · mart_sector   │
+   │  Multi-engine reads · Snowflake · Athena · Trino           │
+   │  All read the same Iceberg bytes                            │
    └────────────────────────────┬───────────────────────────────┘
-                                │  AWS Athena (engine-of-choice)
+                                │  Fivetran Transformations triggers dbt Labs
+                                │  the moment each source sync finishes
                                 ▼
    ┌────────────────────────────────────────────────────────────┐
-   │  build_snapshot.py — extracts gold layer to JSON            │
+   │  dbt Labs — bronze → silver → gold (all in Iceberg)        │
+   │    fct_carrier_risk_signal · fct_cat_exposure ·             │
+   │    fct_loss_development · fct_denied_claims                 │
    └────────────────────────────┬───────────────────────────────┘
+                                │  build_snapshot.py → /public/data/*.json
                                 ▼
    ┌────────────────────────────────────────────────────────────┐
    │  React + Vite SPA on GitHub Pages                           │
-   │  Holdings · Company Detail · Macro · Complaint Radar ·      │
-   │  Research AI · ODI Architecture · Pipeline                  │
+   │  Policies · Cat Exposure · Claims Radar · UW Copilot ·     │
+   │  ODI Architecture · Pipeline · dbt-Wizard                   │
    └────────────────────────────────────────────────────────────┘
 ```
+
+The flow in one line: **Source systems → Fivetran → Iceberg (MDLS) → Snowflake / Athena / Trino → dbt Labs → React.**
+Fivetran lands every CDC row into Iceberg (MDLS) on S3 in open Apache Iceberg format — one copy of the bytes. Snowflake, Athena, and Trino all read the same Iceberg bytes via external table catalogs (no copies, no extracts). Fivetran Transformations triggers dbt Labs the moment each source sync finishes; bronze → silver → gold materialization stays in Iceberg.
 
 ## Layout
 

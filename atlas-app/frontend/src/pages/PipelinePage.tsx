@@ -75,7 +75,7 @@ export default function PipelinePage() {
         fivetran_id: 'oracle_pas_connector',
         dashboard_url: 'https://fivetran.com/dashboard/connectors/oracle_pas_connector',
         destination: 'S3 Iceberg',
-        source_db: 'Oracle 19c · LogMiner CDC',
+        source_db: 'Oracle 19c · Binary Log Reader',
         rows_synced_total: 14_820_000,
         throughput_24h: mkSeries(4200, 950, connectorsDown ? -2800 : 80),
         lag_24h: mkSeries(connectorsDown ? 240 : 12, 8, connectorsDown ? 480 : 0),

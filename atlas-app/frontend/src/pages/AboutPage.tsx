@@ -145,7 +145,7 @@ const PILLARS = [
 ];
 
 const STACK = [
-  { layer: 'Ingest',     name: 'Fivetran connectors',        note: 'Oracle 19c (LogMiner CDC) · SQL Server 2019 (Change Tracking) · NAIC · NOAA Storm Events. Four sources, zero ETL code.' },
+  { layer: 'Ingest',     name: 'Fivetran connectors',        note: 'Oracle 19c (Binary Log Reader) · SQL Server 2019 (Change Tracking) · NAIC · NOAA Storm Events. Four sources, zero ETL code.' },
   { layer: 'Storage',    name: 'Amazon S3',                  note: 'verity-odi-lake bucket holds bronze · silver · gold prefixes.' },
   { layer: 'Format',     name: 'Apache Iceberg v2',          note: 'Parquet files, ZSTD-compressed, Glue catalog.' },
   { layer: 'Catalog',    name: 'AWS Glue Data Catalog',      note: 'Iceberg REST + table-level access control.' },
@@ -158,7 +158,7 @@ const STACK = [
 const DATA_SOURCES = [
   {
     title: 'Oracle 19c — Policy Administration System',
-    description: 'The carrier\'s primary Guidewire-style PAS, replicated continuously via Oracle LogMiner CDC. Schema follows the operational system; line-of-business, premium, retention, and effective dates flow through unchanged. The headline "legacy core → open lake" story Fivetran was built for — no consultants, no custom code, no off-hours batches.',
+    description: 'The carrier\'s primary Guidewire-style PAS, replicated continuously via Oracle Binary Log Reader. Schema follows the operational system; line-of-business, premium, retention, and effective dates flow through unchanged. The headline "legacy core → open lake" story Fivetran was built for — no consultants, no custom code, no off-hours batches.',
     provides: 'Policies · endorsements · LoB · premium · retention · effective dates',
   },
   {

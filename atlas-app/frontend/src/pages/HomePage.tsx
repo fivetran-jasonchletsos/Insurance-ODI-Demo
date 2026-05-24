@@ -360,10 +360,10 @@ export default function HomePage() {
           <ol className="grid grid-cols-1 md:grid-cols-5 gap-3 sm:gap-4">
             {[
               { tag: '01', label: 'Sources', desc: 'Oracle PAS · SQL Server Claims · NAIC · NOAA. Two legacy core DBs + two public enrichment sources, four Fivetran connectors.', accent: 'bronze' as const },
-              { tag: '02', label: 'Ingest', desc: 'Fivetran writes raw bronze tables to S3 as Apache Iceberg via the AWS Glue Catalog.', accent: 'bronze' as const },
-              { tag: '03', label: 'Transform', desc: 'dbt builds silver (conformed) → gold (business-ready) marts on Athena.', accent: 'silver' as const },
-              { tag: '04', label: 'Serve', desc: 'Athena queries gold-layer Iceberg tables. Same SQL would run on Trino or DuckDB.', accent: 'gold' as const },
-              { tag: '05', label: 'Reason', desc: 'AI agent reads gold-layer parquet directly through Glue. No warehouse hop required.', accent: 'gold' as const },
+              { tag: '02', label: 'Iceberg (MDLS)', desc: 'Fivetran lands every CDC row into Iceberg on S3 in open Apache Iceberg format — one copy of the bytes, customer-owned.', accent: 'bronze' as const },
+              { tag: '03', label: 'Multi-engine', desc: 'Snowflake, Athena, and Trino all read the same Iceberg bytes via external table catalogs. No copies, no extracts.', accent: 'silver' as const },
+              { tag: '04', label: 'Transform', desc: 'Fivetran Transformations triggers dbt Labs the moment each sync finishes. bronze → silver → gold stays in Iceberg.', accent: 'silver' as const },
+              { tag: '05', label: 'Serve & Reason', desc: 'React reads the gold snapshot. AI agents read gold-layer parquet directly through Glue. No warehouse hop required.', accent: 'gold' as const },
             ].map((s) => (
               <li key={s.tag} className="research-card p-4 hover:border-[var(--gold)] transition-colors">
                 <div className="text-[10px] font-mono font-bold text-[var(--gold-dim)] tracking-wider">{s.tag}</div>

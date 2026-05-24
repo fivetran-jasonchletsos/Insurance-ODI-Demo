@@ -99,7 +99,7 @@ const STEPS: Step[] = [
   {
     title: 'Modernize your legacy core, no consultants',
     pitch:
-      'Pipeline view shows every Fivetran connector — Oracle Policy Admin (LogMiner CDC), SQL Server Claims (Change Tracking), plus NAIC + NOAA enrichment — with throughput, lag, and incident replay. Simulate a failure to walk the room through observability.',
+      'Pipeline view shows every Fivetran connector — Oracle Policy Admin (Binary Log Reader), SQL Server Claims (Change Tracking), plus NAIC + NOAA enrichment — with throughput, lag, and incident replay. Simulate a failure to walk the room through observability.',
     cta: { label: 'Inspect Pipeline', to: '/pipeline' },
     preview: () => (
       <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 grid grid-cols-4 gap-1">

@@ -364,8 +364,8 @@ export default function Layout() {
           <div>
             <div className="eyebrow-light mb-2">Data Pipeline</div>
             <p className="leading-relaxed text-white/70">
-              NAIC · NOAA Storm Events · OpenFEMA NFIP → Fivetran connectors → S3 + Apache Iceberg → dbt
-              (bronze / silver / gold) → AWS Athena → static JSON snapshot
+              Oracle PAS · SQL Server Claims · NAIC · NOAA → Fivetran → Iceberg (MDLS) →
+              Snowflake / Athena / Trino → dbt (bronze / silver / gold) → static JSON snapshot
             </p>
           </div>
           <div>

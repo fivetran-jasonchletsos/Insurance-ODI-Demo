@@ -3,7 +3,7 @@
  * Adapted from Healthcare-EPIC-Snowflake-Demo for Verity Insurance.
  *
  * Components:
- *   WizardPipelineFlow   — 4-stage animated pipeline (Fivetran → Snowflake → dbt-wizard → reads it)
+ *   WizardPipelineFlow   — animated pipeline (Sources → Fivetran → Iceberg (MDLS) → Snowflake / Athena / Trino → dbt-wizard → reads it)
  *   LineagePanel         — live-evolving lineage graph for WizardLivePage
  *   WizardHub            — hub-and-spoke radial for the 4 sub-agents
  *   BuildCompleteSummary — 4-pane summary for build-complete panel
@@ -49,17 +49,18 @@ type Stage = {
 };
 
 const PIPELINE_STAGES: Stage[] = [
-  { key: 'src',  layer: 'Sources',       vendor: 'Oracle PAS + Claims DB', stat: 'Oracle 19c + SQL Server · CDC', color: C.inkDim,   icon: 'P' },
-  { key: 'ft',   layer: 'Ingestion',     vendor: 'Fivetran',                stat: '750+ connectors · Snowflake',  color: C.fivetran, icon: 'F' },
-  { key: 'snow', layer: 'Compute',       vendor: 'Snowflake',               stat: 'XS warehouse · auto-suspend',  color: C.snow,     icon: 'S' },
-  { key: 'dbt',  layer: 'Build-time AI', vendor: 'dbt Labs + dbt-wizard',   stat: '4 sub-agents · 90s/model',    color: C.dbt,      icon: 'W' },
-  { key: 'read', layer: 'Reads it',      vendor: 'Snowflake reads it',      stat: 'same account · no copy',      color: C.teal,     icon: 'R' },
+  { key: 'src',  layer: 'Sources',       vendor: 'Oracle PAS + Claims DB',     stat: 'Oracle 19c + SQL Server · CDC',           color: C.inkDim,   icon: 'P' },
+  { key: 'ft',   layer: 'Ingestion',     vendor: 'Fivetran',                    stat: '750+ connectors · lands to MDLS',         color: C.fivetran, icon: 'F' },
+  { key: 'ice',  layer: 'Open Lake',     vendor: 'Iceberg (MDLS)',              stat: 'S3 · one copy of the bytes',              color: C.violet,   icon: 'I' },
+  { key: 'eng',  layer: 'Compute',       vendor: 'Snowflake / Athena / Trino',  stat: 'External Iceberg reads',                  color: C.snow,     icon: 'E' },
+  { key: 'dbt',  layer: 'Build-time AI', vendor: 'dbt Labs + dbt-wizard',       stat: 'Triggered by Fivetran · 4 sub-agents',    color: C.dbt,      icon: 'W' },
+  { key: 'read', layer: 'Reads it',      vendor: 'Multi-engine reads it',       stat: 'same Iceberg bytes · no copy',            color: C.teal,     icon: 'R' },
 ];
 
 export function WizardPipelineFlow() {
   return (
     <div className="wiz-flow relative">
-      <div className="grid grid-cols-1 md:grid-cols-9 gap-3 md:gap-2 items-stretch">
+      <div className="grid grid-cols-1 md:grid-cols-11 gap-3 md:gap-2 items-stretch">
         {PIPELINE_STAGES.map((stage, i) => (
           <FragmentRow key={stage.key} stage={stage} isLast={i === PIPELINE_STAGES.length - 1} idx={i} />
         ))}

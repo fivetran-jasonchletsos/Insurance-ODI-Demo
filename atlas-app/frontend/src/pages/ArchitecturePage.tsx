@@ -16,7 +16,7 @@ import { AliveMedallion, type SourceNode, type EngineNode, type ConsumerRole } f
 
 const VERITY_SOURCES: SourceNode[] = [
   { id: 'policy',    label: 'Policy Admin System',   sub: 'SQL Server log-CDC',   logo: 'sqlserver', freshness: '52s lag',  status: 'healthy' },
-  { id: 'claims',    label: 'Claims Mart',           sub: 'Oracle LogMiner',       logo: 'oracle',    freshness: '3 min lag', status: 'healthy' },
+  { id: 'claims',    label: 'Claims Mart',           sub: 'Oracle Binary Log Reader', logo: 'oracle', freshness: '3 min lag', status: 'healthy' },
   { id: 'telem',     label: 'Telematics Stream',     sub: 'Kafka event stream',    logo: 'hl7',       freshness: 'live',      status: 'healthy', streaming: true },
   { id: 'naic',      label: 'NAIC Filings',          sub: 'Weekly regulatory feed',logo: 'naic',      freshness: '4d lag',    status: 'healthy' },
 ];
@@ -201,9 +201,16 @@ export default function ArchitecturePage() {
       {/* ── Data Flow diagram ─────────────────────────────────────────────── */}
       <section className="research-card p-6 sm:p-8 mb-8" style={cardStyle}>
         <div className="eyebrow mb-1">Data Flow</div>
-        <h2 className="font-serif text-2xl font-semibold text-[var(--ink-strong)] mb-6">
-          From Oracle, SQL Server, NAIC + NOAA to one governed gold layer
+        <h2 className="font-serif text-2xl font-semibold text-[var(--ink-strong)] mb-2">
+          Fivetran &rarr; Iceberg (MDLS) &rarr; Snowflake &middot; Athena &middot; Trino &rarr; dbt
         </h2>
+        <p className="text-sm text-[var(--ink-muted)] leading-relaxed max-w-3xl mb-6">
+          Fivetran lands every CDC row into Iceberg (MDLS) on S3 in open Apache Iceberg format &mdash;
+          one copy of the bytes. Snowflake, Athena, and Trino all read the same Iceberg tables via
+          external table catalogs (no copies, no extracts). Fivetran Transformations triggers dbt
+          Labs the moment each source sync finishes; bronze &rarr; silver &rarr; gold materialization
+          stays in Iceberg.
+        </p>
 
         <AliveMedallion
           sources={VERITY_SOURCES}
