@@ -12,21 +12,28 @@
 // render in the recording even if connectors are paused.
 
 import { useState, useEffect } from 'react';
-import { AliveMedallion, type SourceNode, type EngineNode } from '../components/AliveMedallion';
+import { AliveMedallion, type SourceNode, type EngineNode, type ConsumerRole } from '../components/AliveMedallion';
 
 const VERITY_SOURCES: SourceNode[] = [
-  { id: 'oracle', label: 'Oracle 19c',  sub: 'Policy Admin · LogMiner CDC',   logo: 'oracle',    freshness: '52s ago',  lagP99: '4 min', status: 'healthy' },
-  { id: 'sql',    label: 'SQL Server',  sub: 'Claims · Change Tracking',       logo: 'sqlserver', freshness: '38s ago',  lagP99: '3 min', status: 'healthy' },
-  { id: 'naic',   label: 'NAIC',        sub: 'Carrier filings · enrichment',   logo: 'naic',      freshness: '6 h ago',  lagP99: '—',     status: 'healthy' },
-  { id: 'noaa',   label: 'NOAA',        sub: 'Storm events · cat data feed',   logo: 'noaa',      freshness: 'live',     lagP99: '18 s',  status: 'healthy', streaming: true },
+  { id: 'policy',    label: 'Policy Admin System',   sub: 'SQL Server log-CDC',   logo: 'sqlserver', freshness: '52s lag',  status: 'healthy' },
+  { id: 'claims',    label: 'Claims Mart',           sub: 'Oracle LogMiner',       logo: 'oracle',    freshness: '3 min lag', status: 'healthy' },
+  { id: 'telem',     label: 'Telematics Stream',     sub: 'Kafka event stream',    logo: 'hl7',       freshness: 'live',      status: 'healthy', streaming: true },
+  { id: 'naic',      label: 'NAIC Filings',          sub: 'Weekly regulatory feed',logo: 'naic',      freshness: '4d lag',    status: 'healthy' },
 ];
 
 const VERITY_ENGINES: EngineNode[] = [
-  { name: 'Athena',    active: true, logo: 'athena' },
-  { name: 'Snowflake',               logo: 'snowflake' },
-  { name: 'DuckDB',                  logo: 'duckdb' },
-  { name: 'Trino',                   logo: 'trino' },
-  { name: 'Spark',                   logo: 'spark' },
+  { name: 'Snowflake', active: true,  logo: 'snowflake' },
+  { name: 'Athena',                   logo: 'athena' },
+  { name: 'DuckDB',                   logo: 'duckdb' },
+  { name: 'Trino',                    logo: 'trino' },
+  { name: 'Spark',                    logo: 'spark' },
+];
+
+const VERITY_ROLES: ConsumerRole[] = [
+  { label: 'Underwriters', sub: 'risk pricing' },
+  { label: 'Claims',       sub: 'fraud & SIU' },
+  { label: 'Actuarial',    sub: 'reserves & rate' },
+  { label: 'Compliance',   sub: 'NAIC reporting' },
 ];
 
 // ─── Types (local) ──────────────────────────────────────────────────────────
@@ -204,6 +211,8 @@ export default function ArchitecturePage() {
           silver={{ ...layerStats('silver'), trend: [140, 152, 165, 178, 192, 205, 218] }}
           gold={{   ...layerStats('gold'),   trend: [88, 96, 105, 115, 124, 135, 148] }}
           engines={VERITY_ENGINES}
+          roles={VERITY_ROLES}
+          enginesCaption="All five read the same data — no copies, no rebuilds per tool."
           accent="#b8975c"
         />
 

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { api, formatBytes, formatCurrencyShort, formatNumber } from '../api/queries';
+import { api, formatCurrencyShort, formatNumber } from '../api/queries';
 import type { SummaryStats, Company } from '../types';
 import Sparkline from '../components/Sparkline';
 
@@ -69,117 +69,164 @@ export default function HomePage() {
 
   return (
     <>
-      {/* Institutional hero — paper with gold accent rule */}
-      <section className="bg-[var(--paper)] text-[var(--ink-strong)] relative overflow-hidden border-b border-[var(--hairline)]">
-        {/* Subtle diagonal pattern overlay */}
+      {/* SPLIT-SCREEN HERO — two parallel tracks, side by side.
+          Left (Track A): Underwriting Dashboard — the book you'd hand a CFO today
+          Right (Track B): dbt Wizard — the AI build you'd hand them tomorrow */}
+      <section className="bg-[var(--paper)] border-b border-[var(--hairline)] relative overflow-hidden">
         <div className="absolute inset-0 opacity-[0.05] pointer-events-none" aria-hidden style={{
           backgroundImage: 'repeating-linear-gradient(135deg, transparent 0 28px, rgba(184,151,92,0.45) 28px 29px)',
         }} />
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-24 relative">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-end">
-            <div className="lg:col-span-7">
-              <div className="eyebrow mb-4">Verity Insurance · Open Data Infrastructure</div>
-              <h1 className="font-serif text-4xl sm:text-6xl font-semibold text-[var(--ink-strong)] leading-[0.98] tracking-tight">
-                One lake.<br />
-                <span className="text-[var(--gold-dim)]">Every engine.</span><br />
-                Full control.
-              </h1>
-              <p className="mt-6 text-base sm:text-lg text-[var(--ink-muted)] max-w-2xl leading-relaxed">
-                Underwriting intelligence backed by an open data lake. Carrier filings, catastrophe data,
-                and claims signals — landed once in open Iceberg tables on S3, queried by Athena,
-                governed in Glue, ready for AI agents the moment they arrive.
-              </p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                <button
-                  onClick={() => navigate('/holdings')}
-                  className="inline-flex items-center gap-2 rounded-sm font-semibold text-sm text-[var(--navy-deep)] px-5 py-3 shadow-lg hover:opacity-95 transition-opacity"
-                  style={{ background: 'var(--gold)' }}
-                >
-                  Open the book <span aria-hidden>→</span>
-                </button>
-                <button
-                  onClick={() => navigate('/architecture')}
-                  className="inline-flex items-center gap-2 rounded-sm font-semibold text-sm text-[var(--ink-strong)] bg-white border border-[var(--hairline)] px-5 py-3 hover:border-[var(--gold)] transition-colors"
-                >
-                  See the ODI architecture <span aria-hidden>→</span>
-                </button>
-              </div>
-            </div>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 relative">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-stretch">
 
-            <div className="lg:col-span-5">
-              <div className="bg-white text-[var(--ink)] rounded-sm border border-[var(--hairline)] shadow-xl overflow-hidden">
-                <div className="px-5 py-3 border-b border-[var(--hairline)] flex items-center justify-between bg-[var(--paper-deep)]">
-                  <div className="eyebrow">Lake Snapshot</div>
-                  <div className="text-[10px] font-semibold text-[var(--ink-soft)] uppercase tracking-wider">Athena · Iceberg</div>
+            {/* ━━━━━━━━ LEFT: UNDERWRITING DASHBOARD ━━━━━━━━ */}
+            <div className="flex flex-col rounded-sm border border-[var(--hairline)] bg-white overflow-hidden shadow-sm">
+              <div className="px-6 pt-6 pb-2 border-b border-[var(--hairline-soft)] flex items-center gap-3">
+                <span
+                  className="status-pill bull inline-flex items-center gap-1.5"
+                  style={{ fontSize: 11, padding: '3px 9px', fontWeight: 700 }}
+                >
+                  <span className="h-1.5 w-1.5 rounded-full bg-[var(--bull)] animate-pulse" />
+                  Underwriting Dashboard · live
+                </span>
+                <span className="eyebrow" style={{ color: 'var(--gold-dim)' }}>Track A</span>
+              </div>
+
+              <div className="px-6 pt-5 pb-6 flex-1 flex flex-col">
+                <div className="eyebrow mb-2">Verity Insurance</div>
+                <h2 className="font-serif text-3xl sm:text-4xl font-semibold leading-[1.05] text-[var(--ink-strong)] tracking-tight">
+                  One lake.{' '}
+                  <span className="text-[var(--gold-dim)]">Every engine.</span><br className="hidden sm:block" /> Full control.
+                </h2>
+                <p className="mt-4 text-[15px] text-[var(--ink-muted)] leading-relaxed">
+                  Underwriting intelligence backed by an open data lake. Carrier filings, catastrophe
+                  data, and claims signals — landed once in open Iceberg tables on S3, queried by
+                  Athena, governed in Glue, ready for AI agents the moment they arrive.
+                </p>
+
+                {/* Lake snapshot — compact KPI strip */}
+                <div className="mt-6 rounded-sm border border-[var(--hairline)] bg-[var(--paper-deep)] overflow-hidden">
+                  <div className="px-4 py-2 border-b border-[var(--hairline-soft)] flex items-center justify-between bg-white">
+                    <div className="eyebrow">Lake Snapshot</div>
+                    <div className="text-[10px] font-medium text-[var(--ink-soft)] uppercase tracking-wider">Athena · Iceberg</div>
+                  </div>
+                  <div className="grid grid-cols-2 divide-x divide-y divide-[var(--hairline-soft)] tabular bg-white">
+                    <Stat label="Carriers" value={stats ? formatNumber(stats.total_companies) : '—'} hint="regulated insurers" />
+                    <Stat
+                      label="Policies · MoM"
+                      value={stats ? formatNumber(stats.total_filings) : '—'}
+                      hint="vs. prior 11-mo avg"
+                      sparkValues={filingsSpark}
+                      sparkStroke="var(--navy-deep)"
+                      delta={filingsDelta}
+                    />
+                    <Stat label="Cat series" value={stats ? formatNumber(stats.total_macro_series) : '—'} hint="NOAA" />
+                    <Stat
+                      label="Claims · MoM"
+                      value={stats ? formatNumber(stats.total_complaints) : '—'}
+                      hint="vs. prior 11-mo avg"
+                      sparkValues={complaintsSpark}
+                      sparkStroke="var(--gold-dim)"
+                      delta={complaintsDelta}
+                    />
+                  </div>
                 </div>
-                <div className="grid grid-cols-2 divide-x divide-y divide-[var(--hairline-soft)] tabular">
-                  <Stat label="Carriers" value={stats ? formatNumber(stats.total_companies) : '—'} hint="regulated insurers" />
-                  <Stat
-                    label="Policies · MoM"
-                    value={stats ? formatNumber(stats.total_filings) : '—'}
-                    hint="vs. prior 11-mo avg"
-                    sparkValues={filingsSpark}
-                    sparkStroke="var(--navy-deep)"
-                    delta={filingsDelta}
-                  />
-                  <Stat label="Cat series" value={stats ? formatNumber(stats.total_macro_series) : '—'} hint="NOAA" />
-                  <Stat
-                    label="Claims · MoM"
-                    value={stats ? formatNumber(stats.total_complaints) : '—'}
-                    hint="vs. prior 11-mo avg"
-                    sparkValues={complaintsSpark}
-                    sparkStroke="var(--gold-dim)"
-                    delta={complaintsDelta}
-                  />
-                </div>
-                <div className="px-5 py-3 border-t border-[var(--hairline)] flex items-center justify-between text-[11px] text-[var(--ink-soft)] bg-[var(--paper-deep)]">
-                  <span className="inline-flex items-center gap-1.5">
-                    <span className="h-1.5 w-1.5 rounded-full bg-[var(--bull)] animate-pulse" />
-                    {stats ? formatBytes(stats.s3_bytes) : '—'} in S3 · {stats?.iceberg_table_count ?? '—'} Iceberg tables
-                  </span>
-                  <button onClick={() => navigate('/pipeline')} className="font-semibold hover:text-[var(--ink-strong)] uppercase tracking-wider">
-                    Inspect →
+
+                <div className="mt-auto pt-6 flex flex-wrap gap-2.5">
+                  <button
+                    onClick={() => navigate('/holdings')}
+                    className="inline-flex items-center gap-2 rounded-sm font-semibold text-sm text-[var(--navy-deep)] px-5 py-2.5 shadow-sm hover:opacity-95 transition-opacity"
+                    style={{ background: 'var(--gold)' }}
+                  >
+                    Open the book <span aria-hidden>→</span>
+                  </button>
+                  <button
+                    onClick={() => navigate('/architecture')}
+                    className="inline-flex items-center gap-2 rounded-sm bg-white border border-[var(--hairline)] text-[var(--ink-strong)] font-semibold px-4 py-2.5 hover:bg-[var(--paper-deep)] hover:border-[var(--gold)] transition-colors"
+                  >
+                    ODI architecture
+                  </button>
+                  <button
+                    onClick={() => navigate('/agent')}
+                    className="inline-flex items-center gap-2 rounded-sm bg-white border border-[var(--hairline)] text-[var(--ink-strong)] font-semibold px-4 py-2.5 hover:bg-[var(--paper-deep)] transition-colors"
+                  >
+                    Underwriting Copilot
                   </button>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* dbt-wizard scenario CTA */}
-      <section className="mx-auto max-w-7xl px-4 pt-10 pb-2 sm:px-6 lg:px-8">
-        <div
-          className="rounded-lg border border-[var(--hairline)] bg-white p-5 sm:p-7 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5"
-          style={{ borderLeft: '4px solid var(--clinical-teal, #0d9488)' }}
-        >
-          <div>
-            <div className="eyebrow mb-1" style={{ color: 'var(--clinical-teal, #0d9488)' }}>dbt-wizard · Live demo</div>
-            <h2 className="font-serif text-xl sm:text-2xl font-semibold text-[var(--ink-strong)] tracking-tight leading-snug">
-              VP of Claims asks why Hurricane-Beryl severity exceeded the model by 38%.
-            </h2>
-            <p className="mt-2 text-sm text-[var(--ink-muted)] leading-relaxed max-w-2xl">
-              Four sub-agents surface the upstream models, author the SQL, write the tests, and materialize
-              a new gold table in 90 seconds — root cause identified before the Reserves Committee meets.
-            </p>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-2 shrink-0">
-            <Link
-              to="/scenario"
-              className="inline-flex items-center gap-2 rounded-md font-semibold text-sm px-5 py-3 whitespace-nowrap border border-[var(--hairline)] bg-white text-[var(--ink-strong)] hover:border-[var(--clinical-teal,#0d9488)] transition-colors"
-            >
-              Read the scenario
-            </Link>
-            <Link
-              to="/wizard-live"
-              className="inline-flex items-center gap-2 rounded-md text-white font-semibold text-sm px-5 py-3 whitespace-nowrap hover:opacity-95 transition-opacity"
-              style={{ background: 'var(--clinical-teal, #0d9488)' }}
-            >
-              Open the Live Build
-              <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                <path d="M5 12h14M13 5l7 7-7 7" />
-              </svg>
-            </Link>
+            {/* ━━━━━━━━ RIGHT: dbt WIZARD ━━━━━━━━ */}
+            <div className="flex flex-col rounded-sm border border-[var(--hairline)] bg-white overflow-hidden shadow-sm">
+              <div className="px-6 pt-6 pb-2 border-b border-[var(--hairline-soft)] flex items-center gap-3">
+                <span
+                  className="status-pill healthy inline-flex items-center gap-1.5"
+                  style={{ fontSize: 11, padding: '3px 9px', fontWeight: 700, background: 'var(--clinical-teal-bg, #ccfbf1)', color: 'var(--clinical-teal, #0d9488)' }}
+                >
+                  <span className="h-1.5 w-1.5 rounded-full bg-[var(--clinical-teal,#0d9488)] animate-pulse" />
+                  dbt Wizard · live build
+                </span>
+                <span className="eyebrow" style={{ color: 'var(--clinical-teal, #0d9488)' }}>Track B</span>
+                <span className="eyebrow ml-auto">BLD-2026-05-23-0007</span>
+              </div>
+
+              <div className="px-6 pt-5 pb-6 flex-1 flex flex-col">
+                <div className="eyebrow mb-2" style={{ color: 'var(--clinical-teal, #0d9488)' }}>Agentic data engineering</div>
+                <h2 className="font-serif text-3xl sm:text-4xl font-semibold leading-[1.05] text-[var(--ink-strong)] tracking-tight">
+                  Ask a question.{' '}
+                  <span style={{ color: 'var(--clinical-teal, #0d9488)' }}>Watch the model get built.</span>
+                </h2>
+                <p className="mt-4 text-[15px] text-[var(--ink-muted)] leading-relaxed">
+                  The VP of Claims asks why Hurricane-Beryl severity exceeded the model by 38%.
+                  No gold table exists. The Reserves Committee meets in 14 hours.
+                  Manual build: 3 to 5 days. dbt Wizard: <strong className="text-[var(--ink-strong)]">90 seconds</strong>.
+                </p>
+
+                {/* 4-step demo flow — compact */}
+                <div className="mt-6 grid grid-cols-2 gap-2.5">
+                  {DEMO_FLOW.map((tile) => (
+                    <div
+                      key={tile.step}
+                      className="rounded-sm border border-[var(--hairline)] bg-[var(--paper-deep)] p-3"
+                      style={{ borderLeft: `3px solid ${tile.color}` }}
+                    >
+                      <div className="font-mono text-[9.5px] uppercase tracking-wider mb-1" style={{ color: tile.color }}>
+                        {tile.step}
+                      </div>
+                      <div className="font-serif font-semibold text-[var(--ink-strong)] text-[13px] mb-1 leading-tight">
+                        {tile.title}
+                      </div>
+                      <p className="text-[11px] text-[var(--ink-muted)] leading-snug">{tile.body}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-auto pt-6 flex flex-wrap gap-2.5">
+                  <Link
+                    to="/scenario"
+                    className="inline-flex items-center gap-2 rounded-sm text-white font-semibold px-5 py-2.5 shadow-sm hover:opacity-95 transition-opacity"
+                    style={{ background: 'var(--clinical-teal, #0d9488)' }}
+                  >
+                    Start the demo
+                    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                      <path d="M5 12h14M13 5l7 7-7 7" />
+                    </svg>
+                  </Link>
+                  <Link
+                    to="/wizard-live"
+                    className="inline-flex items-center gap-2 rounded-sm bg-white border border-[var(--hairline)] text-[var(--ink-strong)] font-semibold px-4 py-2.5 hover:bg-[var(--paper-deep)] transition-colors"
+                  >
+                    Jump to live build
+                  </Link>
+                  <Link
+                    to="/outcome"
+                    className="inline-flex items-center gap-2 rounded-sm bg-white border border-[var(--hairline)] text-[var(--ink-strong)] font-semibold px-4 py-2.5 hover:bg-[var(--paper-deep)] transition-colors"
+                  >
+                    See the outcome
+                  </Link>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -347,6 +394,13 @@ export default function HomePage() {
     </>
   );
 }
+
+const DEMO_FLOW = [
+  { step: '01 · Scenario', title: 'The VP asks',     body: 'Hurricane-Beryl severity beat the model by 38%. No gold table. Reserves Committee in 14 hours.', color: 'var(--caution, #d97706)' },
+  { step: '02 · Live Build', title: 'Four agents build', body: 'Explorer, Summary, Worker, Verification author the model in 90 seconds on screen.', color: 'var(--clinical-teal, #0d9488)' },
+  { step: '03 · Outcome',  title: 'Root cause found', body: 'Coastal-zone reinsurance treaty layer missing from the cat-model spine. 7 of 11 outliers share it.', color: 'var(--bull, #16a34a)' },
+  { step: '04 · Impact',   title: '14 hours early',   body: 'Committee gets the answer before they meet. NAIC quarterly stat filing goes out clean.', color: 'var(--gold-dim, #b8975c)' },
+];
 
 function Stat({ label, value, hint, sparkValues, sparkStroke, delta }: { label: string; value: string; hint: string; sparkValues?: number[]; sparkStroke?: string; delta?: number | null }) {
   const deltaColor = delta == null ? 'var(--ink-soft)' : delta >= 0 ? 'var(--bull)' : 'var(--bear)';
