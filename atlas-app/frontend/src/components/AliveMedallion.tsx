@@ -27,6 +27,7 @@ export interface SourceNode {
   status?: NodeStatus;
   streaming?: boolean;
   lagP99?: string;
+  pipelineUrl?: string;
 }
 
 export interface LayerStat {
@@ -46,6 +47,7 @@ export type VendorLogo =
   | 'snowflake' | 'fivetran' | 'dbt' | 'iceberg' | 'glue'
   | 'oracle'    | 'sqlserver'| 'hl7'  | 'cms'
   | 'sec'       | 'fred'     | 'cfpb' | 'naic' | 'noaa'
+  | 'great_expectations'
   | 'athena'    | 'duckdb'   | 'trino'| 'spark';
 
 export interface ConsumerRole {
@@ -128,6 +130,18 @@ export function AliveMedallion({
                         {s.lagP99 && <span className="am-source-lag">p99 {s.lagP99}</span>}
                       </div>
                     )}
+                    {s.pipelineUrl && (
+                      <a
+                        className="am-source-pipeline"
+                        href={s.pipelineUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <VendorMark kind="fivetran" size={12} />
+                        Open in Fivetran
+                        <span aria-hidden>↗</span>
+                      </a>
+                    )}
                   </div>
                 </article>
               );
@@ -168,6 +182,10 @@ export function AliveMedallion({
             <span className="am-dbt-chip">
               <VendorMark kind="dbt" size={14} />
               dbt on Snowflake compute · commits Silver + Gold as Iceberg snapshots
+            </span>
+            <span className="am-dbt-chip am-gx-chip">
+              <VendorMark kind="great_expectations" size={14} />
+              Great Expectations validates Bronze before Silver promotion
             </span>
             <span className="am-lake-truth">One set of files · ACID · time-travel</span>
           </footer>
@@ -423,6 +441,13 @@ function VendorMark({ kind, size = 20 }: { kind: VendorLogo; size?: number }) {
       return <svg {...common}><rect width="24" height="24" rx="5" fill="#dd00a1" /><text x="12" y="16" textAnchor="middle" fontSize="9" fontWeight="900" fill="#ffffff">Tr</text></svg>;
     case 'spark':
       return <svg {...common}><rect width="24" height="24" rx="5" fill="#e25a1c" /><text x="12" y="16" textAnchor="middle" fontSize="9" fontWeight="900" fill="#ffffff">Sp</text></svg>;
+    case 'great_expectations':
+      return (
+        <svg {...common}>
+          <rect width="24" height="24" rx="5" fill="#ff6310" />
+          <text x="12" y="16" textAnchor="middle" fontSize="8" fontWeight="900" fill="#ffffff" letterSpacing="0.3" fontFamily="Helvetica, Arial, sans-serif">GX</text>
+        </svg>
+      );
   }
 }
 
@@ -544,6 +569,22 @@ const CSS = `
   color: var(--am-ink);
 }
 .am-source-lag { color: var(--am-ink-3); margin-left: auto; }
+.am-source-pipeline {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed var(--am-rule-2);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--am-ink-2);
+  text-decoration: none;
+}
+.am-source-pipeline:hover {
+  text-decoration: underline;
+  color: var(--am-ink);
+}
 .am-live-dot {
   width: 6px; height: 6px; border-radius: 50%;
   animation: am-pulse 1.6s ease-in-out infinite;
@@ -687,6 +728,9 @@ const CSS = `
   align-items: center;
   gap: 6px;
   font-weight: 600;
+  color: var(--am-ink);
+}
+.am-gx-chip {
   color: var(--am-ink);
 }
 .am-lake-truth {
