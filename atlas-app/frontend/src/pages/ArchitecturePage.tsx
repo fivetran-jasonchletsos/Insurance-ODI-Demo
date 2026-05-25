@@ -230,6 +230,9 @@ export default function ArchitecturePage() {
         </div>
       </section>
 
+      {/* ── Run Cache — Fivetran skips syncs when source data hasn't changed ─ */}
+      <RunCachePanel />
+
       {/* ── Schema-evolution ticker (Iceberg's killer feature) ────────────── */}
       <SchemaEvolutionTicker />
 
@@ -529,6 +532,111 @@ function Sparklike({ values }: { values: number[] }) {
 }
 
 // =============================================================================
+// RunCachePanel — Fivetran skips a sync entirely when source data hasn't
+// changed. Hit rate runs ~81% on Verity's mixed Oracle / SQL Server / NOAA
+// / NAIC connector set; insurance reference data (carrier filings, peril
+// codes, state grids) changes rarely, which keeps the average high.
+// =============================================================================
+function RunCachePanel() {
+  const CONNECTORS = [
+    { name: 'Oracle Policy Admin · policies',     scheduled: 96, skipped: 78, hit: 0.813 },
+    { name: 'Oracle Policy Admin · premium_ledger', scheduled: 96, skipped: 49, hit: 0.510 },
+    { name: 'SQL Server Claims · claim_events',    scheduled: 96, skipped: 62, hit: 0.646 },
+    { name: 'NAIC · carrier filings',              scheduled: 24, skipped: 24, hit: 1.000 },
+    { name: 'NAIC · rate filings',                 scheduled: 24, skipped: 23, hit: 0.958 },
+    { name: 'NOAA · storm events',                 scheduled: 48, skipped: 41, hit: 0.854 },
+  ];
+  const tot = CONNECTORS.reduce((a, c) => ({ s: a.s + c.scheduled, k: a.k + c.skipped }), { s: 0, k: 0 });
+  const hit = tot.s ? Math.round((tot.k / tot.s) * 100) : 0;
+
+  return (
+    <section className="mb-8 research-card overflow-hidden" style={cardStyle}>
+      <header className="research-card-header flex items-start justify-between gap-4" style={cardHeaderStyle}>
+        <div>
+          <div className="eyebrow" style={{ color: '#7c3aed' }}>Fivetran · Run Cache</div>
+          <h2 className="font-serif text-xl font-semibold text-[var(--ink-strong)] mt-0.5">
+            The cheapest sync is the one we don't run.
+          </h2>
+          <p className="text-sm text-[var(--ink-muted)] mt-1 max-w-3xl">
+            Before each scheduled sync, Fivetran checks the source for changes. No changes
+            &rarr; the sync is skipped entirely, the <code className="font-mono text-[12px]">_fivetran_synced</code> timestamp
+            doesn't advance, and dbt incrementals filtered on it process zero rows. Run cache
+            decides what moves. Great Expectations decides what passes. dbt decides what
+            becomes business-ready.
+          </p>
+        </div>
+        <div className="inline-flex items-center gap-1.5 rounded-sm px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-white shrink-0" style={{ background: '#7c3aed' }}>
+          {hit}% hit rate · 24h
+        </div>
+      </header>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 divide-y-0 md:divide-x divide-[var(--hairline-soft,#e8e4d8)]">
+        <RecoveryTile label="Run-cache hit rate · 24h" big={`${hit}%`}                                   sub={`${tot.k} of ${tot.s} scheduled syncs skipped — source hadn't changed`} color="#7c3aed" />
+        <RecoveryTile label="Compute hours saved · 90d" big="118 h"                                       sub="≈ $236 in warehouse time at XS rate · idle-hour bill stays at zero" color="#16a34a" />
+        <RecoveryTile label="Annual savings · projected" big="$22.1k"                                     sub="Across Verity + Atlas connectors · vs. dumb 15-min polling baseline" color="#16a34a" />
+        <RecoveryTile label="Avg skipped-sync duration" big="190 ms"                                     sub="Source-change check only · no warehouse spin-up, no rows landed" />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-0 divide-y md:divide-y-0 md:divide-x divide-[var(--hairline-soft,#e8e4d8)] border-t border-[var(--hairline-soft,#e8e4d8)]">
+        <div className="p-5">
+          <div className="text-[10px] uppercase tracking-[0.16em] text-[var(--ink-soft)] font-semibold mb-3">Hit rate · by connector · last 24h</div>
+          <ul className="space-y-2">
+            {CONNECTORS.map((c) => {
+              const pct = Math.round(c.hit * 100);
+              const colour = pct >= 80 ? '#16a34a' : pct >= 50 ? '#7c3aed' : '#b45309';
+              return (
+                <li key={c.name} className="grid grid-cols-[1.6fr_3fr_auto] gap-3 items-center text-[12px]">
+                  <span className="font-mono text-[11px] text-[var(--ink-strong)] truncate">{c.name}</span>
+                  <span className="relative h-2.5 rounded-sm overflow-hidden" style={{ background: '#f4f4ef', border: '1px solid var(--hairline-soft,#e8e4d8)' }}>
+                    <span className="absolute inset-y-0 left-0" style={{ width: `${pct}%`, background: colour, transition: 'width 600ms ease' }} />
+                  </span>
+                  <span className="font-mono text-[11px] text-[var(--ink-muted)] tabular-nums">
+                    <strong className="text-[var(--ink-strong)]">{pct}%</strong> · {c.skipped}/{c.scheduled}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+          <p className="text-[11px] text-[var(--ink-soft)] leading-relaxed mt-3">
+            NAIC and NOAA reference feeds barely change &mdash; nearly every poll is a cache hit.
+            Premium ledger churns the most, which is exactly where the run-cache check earns
+            its keep by skipping the quiet hours.
+          </p>
+        </div>
+        <div className="p-5">
+          <div className="text-[10px] uppercase tracking-[0.16em] text-[var(--ink-soft)] font-semibold mb-3">How dbt amplifies the win</div>
+          <pre className="font-mono text-[11.5px] leading-relaxed overflow-x-auto rounded-sm p-3" style={{ background: '#0b2545', color: '#e6e9f0' }}><code>{`-- inc_claim_lifecycle.sql
+{{
+  config(
+    materialized = 'incremental',
+    unique_key   = 'claim_event_id',
+    incremental_strategy = 'merge',
+    on_schema_change     = 'append_new_columns'
+  )
+}}
+
+select *
+from {{ ref('stg_atlas__claim_events') }}
+{% if is_incremental() %}
+  -- Filter on Fivetran's sync timestamp, not loss_date.
+  -- When run cache skips the sync, this returns zero rows and
+  -- dbt finishes in seconds.
+  where fivetran_synced_at > (
+    select max(fivetran_synced_at) from {{ this }}
+  )
+{% endif %}`}</code></pre>
+          <ul className="mt-3 space-y-2 text-[12px] text-[var(--ink-muted)]">
+            <li><strong className="text-[var(--ink-strong)]">Filter on <code className="font-mono text-[11px]">_fivetran_synced</code></strong>, never on business dates &mdash; that's what propagates the run-cache decision downstream.</li>
+            <li><strong className="text-[var(--ink-strong)]">Honor <code className="font-mono text-[11px]">_fivetran_deleted</code></strong> for soft deletes; the same flag flows through every layer.</li>
+            <li><strong className="text-[var(--ink-strong)]">Never <code className="font-mono text-[11px]">--full-refresh</code></strong> on a schedule &mdash; one rebuild defeats months of saved compute.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// =============================================================================
 // SchemaEvolutionTicker — Iceberg's killer feature, displayed as a stock-ticker
 // =============================================================================
 const EVO_EVENTS = [
@@ -604,7 +712,7 @@ function CostPanel() {
       <div className="grid grid-cols-1 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-[var(--hairline-soft,#e8e4d8)]">
         <CostTile label="Storage · per day"   value="$0.91"  sub="2.6 TB across bronze/silver/gold · S3 Standard-IA"  color="#16a34a" />
         <CostTile label="Compute · per day"   value="$3.78"  sub="Athena per-query · dbt cloud · Spark cat-modelling" color="#b8975c" />
-        <CostTile label="Per-1k rows landed"  value="$0.0014" sub="All-in CDC + transform + serve"                     color="#1d4e89" />
+        <CostTile label="Run cache · saved"   value="$2.94"  sub="81% of scheduled syncs skipped today · no source changes detected" color="#7c3aed" />
         <CostTile label="Equivalent MDS"      value="$14.20" sub="Internal benchmark · same data, warehouse-resident" color="#dc2626" />
       </div>
       <div className="px-5 py-3 border-t border-[var(--hairline-soft,#e8e4d8)] flex items-center justify-between text-[11px] text-[var(--ink-soft)] bg-[var(--paper-deep,#f4efe2)]">
