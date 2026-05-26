@@ -150,7 +150,7 @@ export function AliveMedallion({
 
           <footer className="am-zone-footer">
             <VendorMark kind="fivetran" size={20} />
-            <span>CDC + batch via Fivetran <span style={{ color: '#9ca3af' }}>·</span> Run Cache 81% <span style={{ color: '#9ca3af' }}>·</span> Telematics streams via Kafka</span>
+            <span>CDC + batch via Fivetran <span style={{ color: '#9ca3af' }}>·</span> 81% no-op syncs <span style={{ color: '#9ca3af' }}>·</span> Telematics streams via Kafka</span>
           </footer>
         </section>
 
