@@ -203,7 +203,7 @@ export default function ArchitecturePage() {
       <ThroughputHero />
 
       {/* ── Sync-aware dbt savings teaser — actuals only; full forecast below ── */}
-      <RunCacheSavingsTeaser hitPercent={81} hoursSaved={2.59} dollarsSaved={5.18} />
+      <DbtStateSavingsTeaser hitPercent={81} hoursSaved={2.59} dollarsSaved={5.18} />
 
       {/* ── Data Flow diagram ─────────────────────────────────────────────── */}
       <section className="research-card p-6 sm:p-8 mb-8" style={cardStyle}>
@@ -241,7 +241,7 @@ export default function ArchitecturePage() {
       <SchemaEvolutionTicker />
 
       {/* ── Sync-aware dbt incrementals — zero-row builds when Fivetran no-ops ─ */}
-      <RunCachePanel />
+      <DbtStatePanel />
 
       {/* ── Cost panel (the CFO line) ────────────────────────────────────── */}
       <CostPanel />
@@ -539,12 +539,12 @@ function Sparklike({ values }: { values: number[] }) {
 }
 
 // =============================================================================
-// RunCacheSavingsTeaser — slim band placed beneath ThroughputHero. Shows
+// DbtStateSavingsTeaser — slim band placed beneath ThroughputHero. Shows
 // today's *actuals* (not the annual projection) with a jump-link to the
-// full forecast model inside RunCachePanel below. Neutral slate card +
+// full forecast model inside DbtStatePanel below. Neutral slate card +
 // violet left-border so it doesn't fight the ThroughputHero palette.
 // =============================================================================
-function RunCacheSavingsTeaser({
+function DbtStateSavingsTeaser({
   hitPercent,
   hoursSaved,
   dollarsSaved,
@@ -567,7 +567,7 @@ function RunCacheSavingsTeaser({
           <TeaserStat big={`${hoursSaved.toFixed(1)} h`} sub="compute skipped" />
           <TeaserStat big={`${hitPercent}%`} sub="no-op rate" />
         </div>
-        <a href="#run-cache-forecast" className="ml-auto text-[11px] font-semibold whitespace-nowrap hover:underline" style={{ color: '#7c3aed' }}>
+        <a href="#dbt-state-forecast" className="ml-auto text-[11px] font-semibold whitespace-nowrap hover:underline" style={{ color: '#7c3aed' }}>
           See annual forecast &rarr;
         </a>
       </div>
@@ -587,12 +587,12 @@ function TeaserStat({ big, sub, accent = false }: { big: string; sub: string; ac
 }
 
 // =============================================================================
-// RunCachePanel — Fivetran skips a sync entirely when source data hasn't
+// DbtStatePanel — Fivetran skips a sync entirely when source data hasn't
 // changed. Hit rate runs in the low-80s on Verity's mixed Oracle / SQL
 // Server / NOAA / NAIC connector set; reference data (carrier filings,
 // peril codes, state grids) changes rarely, which keeps the average high.
 // =============================================================================
-function RunCachePanel() {
+function DbtStatePanel() {
   // Connector-level hit rates over the last 24h. Quiet reference feeds run
   // near 100%; the premium ledger churns. The mix lands the aggregate at ~81%.
   const CONNECTORS = [
@@ -662,12 +662,12 @@ function RunCachePanel() {
         <div className="mt-4 rounded-sm border border-[var(--hairline-soft,#e8e4d8)] p-3 flex items-start gap-3 text-[12px]" style={{ background: 'rgba(125,58,237,0.04)' }}>
           <span className="inline-flex items-center justify-center rounded-sm px-1.5 py-0.5 text-[9.5px] font-bold uppercase tracking-wider text-white shrink-0 mt-0.5" style={{ background: '#7c3aed' }}>Related</span>
           <div className="text-[var(--ink-muted)] leading-relaxed">
-            <strong className="text-[var(--ink-strong)]">Looking for Run Cache the product?</strong> Run Cache is a separate dbt Core plugin (<code className="font-mono text-[11px]">pip install run-cache</code>) that skips, defers, or clones dbt models at the build level — different from this connector-side pattern. See the canonical page at <a className="font-mono text-[11px] underline hover:no-underline" style={{ color: '#7c3aed' }} href="https://fivetran-jasonchletsos.github.io/00-Intro-ODI-Demo/run-cache/" target="_blank" rel="noopener noreferrer">fivetran-jasonchletsos.github.io/00-Intro-ODI-Demo/run-cache</a>.
+            <strong className="text-[var(--ink-strong)]">Looking for dbt State the product?</strong> dbt State is a separate dbt Core plugin (<code className="font-mono text-[11px]">pip install dbt-state</code>) that skips, defers, or clones dbt models at the build level — different from this connector-side pattern. See the canonical page at <a className="font-mono text-[11px] underline hover:no-underline" style={{ color: '#7c3aed' }} href="https://fivetran-jasonchletsos.github.io/00-Intro-ODI-Demo/dbt-state/" target="_blank" rel="noopener noreferrer">fivetran-jasonchletsos.github.io/00-Intro-ODI-Demo/dbt-state</a>.
           </div>
         </div>
       </div>
 
-      <RunCacheForecast
+      <DbtStateForecast
         syncsPerDay={tot.s}
         hitRate={tot.k / tot.s}
         secPerSync={30}
@@ -681,11 +681,11 @@ function RunCachePanel() {
 }
 
 // -----------------------------------------------------------------------------
-// RunCacheForecast — transparent savings model attached to RunCachePanel.
+// DbtStateForecast — transparent savings model attached to DbtStatePanel.
 // Labelled "Model output · not actuals." Reconciles to the headline annual-
 // savings tile via an enterprise-scale multiplier.
 // -----------------------------------------------------------------------------
-function RunCacheForecast({
+function DbtStateForecast({
   syncsPerDay,
   hitRate,
   secPerSync,
@@ -718,7 +718,7 @@ function RunCacheForecast({
 
   return (
     <div
-      id="run-cache-forecast"
+      id="dbt-state-forecast"
       className="border-t border-[var(--hairline-soft,#e8e4d8)] p-5 scroll-mt-20"
       style={{ background: 'linear-gradient(180deg, rgba(124,58,237,0.04) 0%, rgba(124,58,237,0) 100%)' }}
     >
