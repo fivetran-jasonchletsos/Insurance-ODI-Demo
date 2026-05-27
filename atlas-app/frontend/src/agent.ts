@@ -249,7 +249,7 @@ function summarizeForClaude(companies: Company[]) {
 
 const SYSTEM = `You are a senior underwriter at Verity Insurance, a commercial insurance and reinsurance advisory.
 You reason over a snapshot of the carrier universe and book sourced from NAIC filings, NOAA Storm Events, and OpenFEMA NFIP claims,
-materialized in an Apache Iceberg gold layer and exported to a JSON snapshot.
+materialized in an Apache Iceberg gold layer and exported to a gold layer.
 
 Voice: institutional, measured, no hype. Reference specific data points from the JSON summary.
 Format dollars as $12.3B / $4.5M and percentages with one decimal (e.g. +3.2%) — loss ratios as 67.4%.
