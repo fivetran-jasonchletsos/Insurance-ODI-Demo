@@ -80,15 +80,20 @@ export default function WizardLivePage() {
 
   // Load playback data
   useEffect(() => {
+    const loadJson = (name: string) =>
+      fetch(wizardDataUrl(name)).then(r => {
+        if (!r.ok) throw new Error(`Failed to load ${name}: ${r.status}`);
+        return r.json();
+      });
     Promise.all([
-      fetch(wizardDataUrl('agents.json')).then(r => r.json()),
-      fetch(wizardDataUrl('scenario.json')).then(r => r.json()),
-      fetch(wizardDataUrl('build_script.json')).then(r => r.json()),
+      loadJson('agents.json'),
+      loadJson('scenario.json'),
+      loadJson('build_script.json'),
     ]).then(([a, s, b]) => {
       setAgents(a.agents);
       setScenario(s);
       setEvents(b.events);
-    });
+    }).catch(() => {});
   }, []);
 
   const agentById = useMemo(() => {

@@ -80,8 +80,12 @@ export default function VerityOutcomePage() {
 
   useEffect(() => {
     fetch(import.meta.env.BASE_URL?.replace(/\/$/, '') + '/data/outcome.json')
-      .then(r => r.json())
-      .then(setO);
+      .then(r => {
+        if (!r.ok) throw new Error(`Failed to load outcome.json: ${r.status}`);
+        return r.json();
+      })
+      .then(setO)
+      .catch(() => {});
   }, []);
 
   if (!o) {

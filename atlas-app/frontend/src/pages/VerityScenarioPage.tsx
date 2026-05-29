@@ -53,7 +53,13 @@ export default function VerityScenarioPage() {
   const [tMinus, setTMinus] = useState('T-12:00:00');
 
   useEffect(() => {
-    fetch(wizardDataUrl('scenario.json')).then(r => r.json()).then(setS);
+    fetch(wizardDataUrl('scenario.json'))
+      .then(r => {
+        if (!r.ok) throw new Error(`Failed to load scenario.json: ${r.status}`);
+        return r.json();
+      })
+      .then(setS)
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
