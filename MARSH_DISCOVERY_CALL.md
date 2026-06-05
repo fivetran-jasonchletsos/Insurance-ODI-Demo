@@ -152,7 +152,7 @@ or
 **Action**: Open Pipeline page. Point at each card — Oracle, SQL Server, NAIC, NOAA. Throughput sparklines and lag visible.
 
 **Say** (point as you talk, **mirror the system he flagged in discovery**):
-> "Oracle 19c policy admin — **LogMiner CDC**, no triggers, no source-side impact. SQL Server claims — **Change Tracking**, same low-touch. NAIC and NOAA via our Connector SDK. Four sources, one open destination, live throughput and lag visible. **Managed.**"
+> "Oracle 19c policy admin — **Binary Log Reader CDC**, no triggers, no source-side impact. SQL Server claims — **Change Tracking**, same low-touch. NAIC and NOAA via our Connector SDK. Four sources, one open destination, live throughput and lag visible. **Managed.**"
 
 **The CDO line (Marsh-specific, verified):**
 > "You're closing four data centers in phases. As each one comes offline, the data sitting in Oracle and SQL Server has to land somewhere — fast, governed, with lineage. Today, my understanding is that's a custom Python/PySpark framework your team maintains. **Fivetran replaces the framework. Your team builds business logic in Databricks instead of maintaining JDBC plumbing.**"

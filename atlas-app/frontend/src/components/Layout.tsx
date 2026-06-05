@@ -365,7 +365,7 @@ export default function Layout() {
             <div className="eyebrow-light mb-2">Data Pipeline</div>
             <p className="leading-relaxed text-white/70">
               Oracle PAS · SQL Server Claims · NAIC · NOAA → Fivetran → Iceberg (MDLS) →
-              dbt → Great Expectations → Snowflake / Athena / Trino → Cortex
+              dbt labs + dbt-wizard → Great Expectations → Snowflake / Athena / Trino → run-time agents
             </p>
           </div>
           <div>
